@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sundial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --dawn-1: #2a1b3d;
+    --dawn-2: #5a3a5e;
+    --dawn-3: #c97b63;
+    --dawn-4: #f4c98c;
+    --noon-1: #6db4d8;
+    --noon-2: #c9e3ec;
+    --dusk-1: #e87a5a;
+    --dusk-2: #8c4a6b;
+    --dusk-3: #2a1b3d;
+    --ink: #1a1118;
+    --paper: #f4ead5;
+    --sun: #ffd76b;
+    --sun-glow: #ffb347;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Fraunces', serif;
+    color: var(--ink);
+    background: var(--paper);
+  }
+
+  /* Sky — color shifts via CSS var driven by JS progress */
+  .sky {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      var(--sky-top, var(--dawn-1)) 0%,
+      var(--sky-mid, var(--dawn-3)) 55%,
+      var(--sky-bot, var(--dawn-4)) 100%
+    );
+    transition: background 1.2s ease;
+    z-index: 0;
+  }
+
+  /* Stars — fade in at night */
+  .stars {
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, white, transparent),
+      radial-gradient(1px 1px at 28% 42%, white, transparent),
+      radial-gradient(1.5px 1.5px at 47% 11%, white, transparent),
+      radial-gradient(1px 1px at 63% 33%, white, transparent),
+      radial-gradient(1px 1px at 78% 22%, white, transparent),
+      radial-gradient(1.5px 1.5px at 88% 48%, white, transparent),
+      radial-gradient(1px 1px at 38% 60%, white, transparent),
+      radial-gradient(1px 1px at 8% 55%, white, transparent),
+      radial-gradient(1px 1px at 92% 8%, white, transparent),
+      radial-gradient(1px 1px at 55% 5%, white, transparent);
+    opacity: var(--star-opacity, 0);
+    transition: opacity 1.5s ease;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Ground — silhouetted hill at the bottom */
+  .ground {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: 28vh;
+    background: var(--ink);
+    clip-path: ellipse(140% 100% at 50% 100%);
+    z-index: 3;
+    box-shadow: 0 -1px 0 rgba(0,0,0,0.3);
+    transition: opacity 0.5s ease;
+  }
+
+  /* Cow scene */
+  .cow-scene {
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    background: linear-gradient(to bottom, #d8e8d0 0%, #b8d4a8 55%, #6b8e4e 55%, #5a7a42 100%);
+  }
+  .cow-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  /* Show cow scene when active */
+  body.scene-cow .cow-scene { opacity: 1; }
+  body.scene-cow .sky,
+  body.scene-cow .stars,
+  body.scene-cow .sun,
+  body.scene-cow .ground { opacity: 0; }
+  body.scene-cow .footer { display: none; }
+
+  /* Bike scene */
+  .bike-scene {
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    background: linear-gradient(to bottom, #d8e8f0 0%, #b8d4e0 50%, #6b8e4e 50%, #5a7a42 100%);
+  }
+  .bike-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  body.scene-bike .bike-scene { opacity: 1; }
+  body.scene-bike .sky,
+  body.scene-bike .stars,
+  body.scene-bike .sun,
+  body.scene-bike .ground { opacity: 0; }
+  body.scene-bike .footer { display: none; }
+
+  /* Flower sway: subtle pendulum rotation around stem base.
+     Different durations and slight delays so flowers sway out of phase. */
+  @keyframes sway-1 {
+    0%, 100% { transform: rotate(-3deg); }
+    50%      { transform: rotate(3deg); }
+  }
+  @keyframes sway-2 {
+    0%, 100% { transform: rotate(-4deg); }
+    50%      { transform: rotate(2deg); }
+  }
+  @keyframes sway-3 {
+    0%, 100% { transform: rotate(-2deg); }
+    50%      { transform: rotate(4deg); }
+  }
+  body.scene-bike #flower-1 { animation: sway-1 2.8s ease-in-out infinite; }
+  body.scene-bike #flower-2 { animation: sway-2 3.4s ease-in-out infinite; }
+  body.scene-bike #flower-3 { animation: sway-3 2.4s ease-in-out infinite; }
+  body.scene-bike #flower-4 { animation: sway-1 3.0s ease-in-out infinite 0.4s; }
+
+  /* Wheel rotation is driven by JS in sync with pedaling */
+
+  /* Drip animation when running — drips from cow's mouth into bucket */
+  @keyframes drip {
+    0% { opacity: 0; transform: translateY(0); }
+    25% { opacity: 0.85; transform: translateY(2px); }
+    75% { opacity: 0.85; transform: translateY(20px); }
+    100% { opacity: 0; transform: translateY(24px); }
+  }
+  body.scene-cow.running #drip {
+    animation: drip 2s ease-in infinite;
+    animation-delay: 1s;
+  }
+
+  /* Cross-browser SVG transform support (Safari/iOS need transform-box).
+     Use transform-box: fill-box so transform-origin is relative to each
+     element's own bounding box rather than the SVG viewport.
+     Bike wheels are rotated via SVG transform attribute in JS, so they
+     don't need this. */
+  #cow-head, .flower {
+    transform-box: fill-box;
+    transform-origin: var(--pivot-x, 50%) var(--pivot-y, 50%);
+  }
+
+  /* Cow drinking animation: head dips down to bucket, lifts back up.
+     Pivot is at the shoulder (505, 290). Positive rotation tilts head down
+     (toward the bucket on the right). The base pose already has nose slightly
+     tilted down, so the dip is gentle. */
+  @keyframes cow-drink {
+    0%   { transform: rotate(0deg) translateY(0); }
+    35%  { transform: rotate(6deg) translateY(8px); }
+    65%  { transform: rotate(6deg) translateY(8px); }
+    100% { transform: rotate(0deg) translateY(0); }
+  }
+  body.scene-cow.running #cow-head {
+    animation: cow-drink 2s ease-in-out infinite;
+  }
+
+  /* Sun — positioned via CSS vars set from JS */
+  .sun {
+    position: fixed;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, var(--sun) 0%, var(--sun-glow) 70%, transparent 100%);
+    box-shadow:
+      0 0 60px var(--sun-glow),
+      0 0 120px rgba(255,179,71,0.4),
+      0 0 200px rgba(255,179,71,0.2);
+    left: var(--sun-x, 8vw);
+    top: var(--sun-y, 78vh);
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  .sun.hidden { opacity: 0; }
+
+  /* Card */
+  .stage {
+    position: relative;
+    z-index: 5;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    overflow-y: auto;
+  }
+
+  .card {
+    background: rgba(244, 234, 213, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(26, 17, 24, 0.12);
+    border-radius: 2px;
+    padding: 3rem 3.5rem;
+    box-shadow: 0 30px 80px rgba(26, 17, 24, 0.25);
+    text-align: center;
+    max-width: 90vw;
+  }
+  @media (max-width: 480px) {
+    .card { padding: 2rem 1.5rem; }
+    .field input { width: 70px; font-size: 1.3rem; }
+    .display { font-size: clamp(2.5rem, 12vw, 4rem); }
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--dusk-2);
+    margin-bottom: 0.5rem;
+  }
+
+  .title {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-style: italic;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 2rem;
+    color: var(--ink);
+  }
+
+  .display {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 300;
+    font-size: clamp(3rem, 9vw, 5.5rem);
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    margin: 1rem 0 2rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .display .sep { opacity: 0.3; margin: 0 0.1em; }
+
+  .inputs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .field input {
+    width: 90px;
+    padding: 0.7rem 0.5rem;
+    border: 1px solid rgba(26, 17, 24, 0.2);
+    background: transparent;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem;
+    text-align: center;
+    color: var(--ink);
+    border-radius: 2px;
+    transition: border-color 0.2s ease;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .field input:focus {
+    outline: none;
+    border-color: var(--ink);
+  }
+
+  .field label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    color: var(--dusk-2);
+  }
+
+  .colon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem;
+    color: rgba(26, 17, 24, 0.3);
+    padding-bottom: 1.6rem;
+  }
+
+  .controls {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  .scene-select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+  }
+  .scene-select label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--dusk-2);
+  }
+  .scene-select select {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(26, 17, 24, 0.3);
+    padding: 0.3rem 0.5rem 0.3rem 0;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  .scene-select select:focus,
+  .scene-select select:hover {
+    border-bottom-color: var(--ink);
+  }
+
+  button {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 0.9rem 2rem;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+  }
+
+  button.primary {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26, 17, 24, 0.2);
+  }
+
+  button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  /* Card visibility — hides while running, reveals on idle/finished */
+  .card {
+    transition: opacity 0.5s ease, transform 0.5s ease, visibility 0s linear 0s;
+  }
+  .running .card {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.96);
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.5s ease, transform 0.5s ease, visibility 0s linear 0.5s;
+  }
+
+  /* Mini control bar — shown only while running */
+  .mini-controls {
+    position: fixed;
+    bottom: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 7;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  /* Visible while running, but hideable via close button */
+  body.running .mini-controls {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+  body.running.controls-hidden .mini-controls {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+    pointer-events: none;
+  }
+
+  /* Reopen button — only visible while running AND controls are hidden */
+  .mini-reopen {
+    position: fixed;
+    bottom: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: 50%;
+    background: rgba(244, 234, 213, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(244, 234, 213, 0.6);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 7;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    transition: opacity 0.4s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  body.running.controls-hidden .mini-reopen {
+    opacity: 0.2;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+  body.running.controls-hidden .mini-reopen:hover {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  }
+  .mini-reopen svg {
+    width: 14px;
+    height: 14px;
+    fill: var(--ink);
+    stroke: var(--ink);
+  }
+  .mini-controls button {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: 50%;
+    background: rgba(244, 234, 213, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(244, 234, 213, 0.6);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  }
+  .mini-controls button:hover {
+    transform: translateY(-2px);
+    background: rgba(244, 234, 213, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  }
+  .mini-controls button svg {
+    width: 12px;
+    height: 12px;
+    fill: var(--ink);
+  }
+  .mini-controls .mini-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    background: rgba(244, 234, 213, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(244, 234, 213, 0.6);
+    border-radius: 999px;
+    padding: 0 0.9rem;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Finished pulse */
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+  }
+  .finished .display { animation: pulse 1.2s ease-in-out infinite; color: var(--dusk-1); }
+
+  .footer {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--paper);
+    opacity: 0.5;
+    transition: opacity 0.4s ease;
+  }
+  .running .footer { opacity: 0; }
+</style>
+</head>
+<body>
+  <div class="sky"></div>
+  <div class="stars"></div>
+  <div class="sun" id="sun"></div>
+  <div class="ground"></div>
+
+  <!-- Cow scene -->
+  <div class="cow-scene" id="cow-scene">
+    <svg viewBox="0 200 800 300" preserveAspectRatio="xMidYMid meet" class="cow-svg">
+      <!-- Distant rolling hills -->
+      <path d="M0,360 Q150,330 300,345 T600,340 T800,355 L800,420 L0,420 Z" fill="#8aab6f" opacity="0.5"/>
+      <path d="M0,385 Q200,365 400,378 T800,382 L800,420 L0,420 Z" fill="#7a9a5f" opacity="0.7"/>
+
+      <!-- Grass ground -->
+      <path d="M0,410 Q200,400 400,408 T800,412 L800,500 L0,500 Z" fill="#6b8e4e"/>
+      <path d="M0,430 Q200,418 400,428 T800,432 L800,500 L0,500 Z" fill="#5a7a42" opacity="0.7"/>
+
+      <!-- Grass tufts -->
+      <g fill="#4a6a35" opacity="0.8">
+        <path d="M120,420 l2,-9 l1,-3 l2,12 z"/>
+        <path d="M180,418 l2,-8 l2,8 z"/>
+        <path d="M680,420 l2,-11 l2,11 z"/>
+        <path d="M730,422 l2,-9 l2,9 z"/>
+        <path d="M150,418 l2,-10 l2,10 z"/>
+        <path d="M210,415 l2,-7 l2,7 z"/>
+      </g>
+
+      <!-- Cow + bucket scaled 1.3x and shifted left, anchored to ground -->
+      <g transform="translate(-200, -72) scale(1.3)">
+
+      <!-- Cow body — centered around x=400 -->
+      <g id="cow-group">
+        <!-- Body shadow on ground -->
+        <ellipse cx="380" cy="438" rx="125" ry="6" fill="#1a1118" opacity="0.25"/>
+
+        <!-- Back legs (further from viewer first, slightly offset) -->
+        <g>
+          <path d="M298,328 Q296,348 294,395 L286,425 L306,425 L308,395 Q310,358 310,333 Z" fill="#fafafa"/>
+          <path d="M282,422 L310,422 L306,432 L286,432 Z" fill="#1a1118"/>
+          <ellipse cx="296" cy="432" rx="13" ry="3" fill="#0a0a0a"/>
+        </g>
+        <g>
+          <path d="M428,328 Q430,348 432,395 L424,425 L444,425 L446,395 Q446,358 440,333 Z" fill="#fafafa"/>
+          <path d="M420,422 L448,422 L444,432 L424,432 Z" fill="#1a1118"/>
+          <ellipse cx="434" cy="432" rx="13" ry="3" fill="#0a0a0a"/>
+        </g>
+
+        <!-- Front legs -->
+        <g>
+          <path d="M345,328 Q343,353 342,395 L334,425 L354,425 L356,395 Q358,358 358,333 Z" fill="#fafafa"/>
+          <path d="M330,422 L358,422 L354,432 L334,432 Z" fill="#1a1118"/>
+          <ellipse cx="344" cy="432" rx="13" ry="3" fill="#0a0a0a"/>
+        </g>
+        <g>
+          <path d="M395,328 Q393,353 392,395 L384,425 L404,425 L406,395 Q408,358 408,333 Z" fill="#fafafa"/>
+          <path d="M380,422 L408,422 L404,432 L384,432 Z" fill="#1a1118"/>
+          <ellipse cx="394" cy="432" rx="13" ry="3" fill="#0a0a0a"/>
+        </g>
+
+        <!-- Main body (barrel) -->
+        <path d="M285,310 Q270,285 300,265 Q360,245 440,250 Q500,255 510,285 Q515,320 500,350 Q485,370 430,375 Q360,375 310,365 Q280,355 280,330 Z" fill="#fafafa" stroke="#d8d0c0" stroke-width="1"/>
+
+        <!-- Belly shading -->
+        <path d="M300,345 Q360,365 470,355 Q485,365 470,370 Q360,378 305,368 Q290,358 300,345 Z" fill="#e8e0d0" opacity="0.6"/>
+
+        <!-- Black holstein patches on body -->
+        <path d="M320,270 Q340,260 370,265 Q385,275 380,295 Q375,305 355,305 Q330,300 318,290 Q312,278 320,270 Z" fill="#1a1118"/>
+        <path d="M410,275 Q440,270 470,285 Q480,300 470,315 Q455,320 430,312 Q410,300 405,288 Q405,278 410,275 Z" fill="#1a1118"/>
+        <path d="M300,320 Q320,315 340,325 Q345,340 332,348 Q312,348 300,335 Q295,325 300,320 Z" fill="#1a1118"/>
+        <path d="M455,330 Q480,325 495,340 Q495,355 480,358 Q460,355 452,345 Q448,335 455,330 Z" fill="#1a1118"/>
+
+        <!-- Udder — between back legs, toward the rear (left) of the body -->
+        <ellipse cx="355" cy="375" rx="20" ry="13" fill="#f5b8b8"/>
+        <ellipse cx="349" cy="382" rx="2.5" ry="4.5" fill="#e89090"/>
+        <ellipse cx="361" cy="382" rx="2.5" ry="4.5" fill="#e89090"/>
+
+        <!-- Tail (back of cow, on the LEFT side since head faces right) -->
+        <path d="M275,295 Q250,288 240,308 Q236,328 250,338 Q258,342 262,336" stroke="#1a1118" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M260,335 Q258,352 252,360 Q248,362 246,358 Q252,348 256,336" fill="#1a1118"/>
+
+        <!-- NECK + HEAD as separate group for animation.
+             Pivot at the shoulder (right side of barrel) so head dips toward bucket. -->
+        <g id="cow-head" style="--pivot-x: 6%; --pivot-y: 44%;">
+          <!-- Neck (extending forward toward bucket on the right) -->
+          <path d="M495,275 Q520,270 545,278 Q565,285 575,300 L568,315 Q548,310 525,308 Q505,308 495,300 Z" fill="#fafafa"/>
+          <!-- Neck black patch -->
+          <path d="M520,278 Q540,275 555,285 Q560,295 548,298 Q530,295 518,290 Q515,283 520,278 Z" fill="#1a1118"/>
+
+          <!-- Head — mostly horizontal, nose slightly tilted DOWN.
+               Skull is above, muzzle drops slightly below the neck axis. -->
+          <!-- Skull (cheek/forehead) -->
+          <path d="M570,278 Q592,272 612,278 Q625,288 622,302 Q618,316 605,318 Q585,318 572,310 Q565,295 570,278 Z" fill="#fafafa"/>
+
+          <!-- Lower jaw — tilts down slightly past the muzzle line -->
+          <path d="M598,310 Q615,315 628,318 Q638,322 640,328 Q632,335 615,332 Q598,326 595,318 Z" fill="#fafafa"/>
+
+          <!-- Muzzle (tilted DOWN — lower than skull) -->
+          <!-- The muzzle ellipse sits lower-right of the skull, giving the head a downward nose -->
+          <g transform="rotate(12 625 322)">
+            <ellipse cx="635" cy="320" rx="22" ry="13" fill="#e8c4a8"/>
+            <ellipse cx="635" cy="320" rx="22" ry="13" fill="none" stroke="#c89878" stroke-width="0.8"/>
+
+            <!-- Mouth line -->
+            <path d="M622,326 Q635,330 650,326" stroke="#8a6048" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+
+            <!-- Nostrils -->
+            <ellipse cx="628" cy="316" rx="2" ry="3.5" fill="#3a2818"/>
+            <ellipse cx="642" cy="316" rx="2" ry="3.5" fill="#3a2818"/>
+          </g>
+
+          <!-- Eye -->
+          <ellipse cx="595" cy="292" rx="3.5" ry="4.5" fill="#fafafa"/>
+          <ellipse cx="595" cy="293" rx="2.8" ry="3.8" fill="#1a1118"/>
+          <circle cx="596" cy="291" r="0.8" fill="#fafafa"/>
+          <!-- Eyelashes hint -->
+          <path d="M591,288 L589,285 M595,287 L595,284 M599,288 L601,285" stroke="#1a1118" stroke-width="0.8" stroke-linecap="round"/>
+
+          <!-- Black patch on head/forehead -->
+          <path d="M580,278 Q595,272 608,278 Q610,288 600,292 Q585,290 578,285 Q575,280 580,278 Z" fill="#1a1118"/>
+
+          <!-- Ear (just behind eye, pointing back-up) -->
+          <path d="M572,275 Q558,265 552,275 Q554,288 565,290 Q572,288 575,282 Z" fill="#fafafa"/>
+          <path d="M568,278 Q560,275 558,282 Q562,288 568,287 Z" fill="#e8a4a4"/>
+
+          <!-- Horns (small, curved, on top of skull) -->
+          <path d="M580,272 Q575,262 580,260 Q585,265 585,272 Z" fill="#d4c098" stroke="#a89070" stroke-width="0.5"/>
+          <path d="M597,272 Q592,262 597,260 Q602,265 602,272 Z" fill="#d4c098" stroke="#a89070" stroke-width="0.5"/>
+
+          <!-- Forehead tuft -->
+          <path d="M588,272 Q591,267 594,272 Q592,275 588,275 Z" fill="#e8d8c8"/>
+        </g>
+      </g>
+
+      <!-- Bucket — positioned to the right, slightly below cow's nose level -->
+      <g id="bucket-group">
+        <!-- Shadow under bucket -->
+        <ellipse cx="660" cy="438" rx="48" ry="4" fill="#1a1118" opacity="0.25"/>
+
+        <!-- Bucket body (slight perspective trapezoid) -->
+        <path d="M618,378 L702,378 L695,438 L625,438 Z" fill="#9a7d52" stroke="#5a4530" stroke-width="2"/>
+
+        <!-- Wood grain staves -->
+        <line x1="638" y1="378" x2="636" y2="438" stroke="#5a4530" stroke-width="1" opacity="0.4"/>
+        <line x1="658" y1="378" x2="658" y2="438" stroke="#5a4530" stroke-width="1" opacity="0.4"/>
+        <line x1="678" y1="378" x2="680" y2="438" stroke="#5a4530" stroke-width="1" opacity="0.4"/>
+
+        <!-- Metal bands -->
+        <path d="M620,384 L700,384 L699,388 L621,388 Z" fill="#3a3a3a"/>
+        <path d="M624,428 L696,428 L695,432 L625,432 Z" fill="#3a3a3a"/>
+
+        <!-- Handle -->
+        <path d="M628,378 Q660,352 692,378" stroke="#2a2a2a" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="628" cy="378" rx="3" ry="2.5" fill="#2a2a2a"/>
+        <ellipse cx="692" cy="378" rx="3" ry="2.5" fill="#2a2a2a"/>
+
+        <!-- Bucket interior (top opening) -->
+        <ellipse cx="660" cy="378" rx="42" ry="6" fill="#3a2818"/>
+
+        <!-- Water -->
+        <defs>
+          <clipPath id="bucket-clip">
+            <path d="M622,378 L698,378 L693,436 L627,436 Z"/>
+          </clipPath>
+          <linearGradient id="water-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#6ba5c8"/>
+            <stop offset="100%" stop-color="#3d7a9a"/>
+          </linearGradient>
+        </defs>
+        <g clip-path="url(#bucket-clip)">
+          <rect id="water-rect" x="618" y="382" width="86" height="54" fill="url(#water-grad)"/>
+          <ellipse id="water-surface" cx="660" cy="382" rx="40" ry="3" fill="#8ec0db"/>
+          <ellipse id="water-surface-shadow" cx="660" cy="383" rx="40" ry="3" fill="#5a8da8" opacity="0.5"/>
+          <line id="water-line-1" x1="635" y1="395" x2="652" y2="395" stroke="#a8d0e4" stroke-width="1" opacity="0.6"/>
+          <line id="water-line-2" x1="668" y1="408" x2="685" y2="408" stroke="#a8d0e4" stroke-width="1" opacity="0.5"/>
+          <line id="water-line-3" x1="640" y1="420" x2="658" y2="420" stroke="#a8d0e4" stroke-width="1" opacity="0.4"/>
+        </g>
+      </g>
+
+      <!-- Drip from cow's mouth -->
+      <ellipse id="drip" cx="650" cy="345" rx="1.8" ry="2.5" fill="#5a8fb0" opacity="0"/>
+
+      </g><!-- end of lift wrapper -->
+    </svg>
+  </div>
+
+  <!-- Bike scene -->
+  <div class="bike-scene" id="bike-scene">
+    <svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet" class="bike-svg">
+      <!-- Sky gradient via background CSS, but add some clouds -->
+      <ellipse cx="120" cy="80" rx="40" ry="14" fill="#fafafa" opacity="0.85"/>
+      <ellipse cx="150" cy="75" rx="32" ry="12" fill="#fafafa" opacity="0.85"/>
+      <ellipse cx="540" cy="60" rx="48" ry="15" fill="#fafafa" opacity="0.8"/>
+      <ellipse cx="580" cy="55" rx="36" ry="13" fill="#fafafa" opacity="0.8"/>
+
+      <!-- Distant rolling hills -->
+      <path d="M0,340 Q150,310 300,325 T600,320 T800,335 L800,420 L0,420 Z" fill="#8aab6f" opacity="0.5"/>
+      <path d="M0,365 Q200,345 400,358 T800,362 L800,420 L0,420 Z" fill="#7a9a5f" opacity="0.7"/>
+
+      <!-- Path/road in the middle (lighter strip where the bike rides) -->
+      <path d="M0,395 Q200,388 400,392 T800,395 L800,408 Q400,406 0,410 Z" fill="#d8c890" opacity="0.6"/>
+
+      <!-- Grass ground -->
+      <path d="M0,408 Q200,402 400,406 T800,410 L800,500 L0,500 Z" fill="#6b8e4e"/>
+      <path d="M0,428 Q200,418 400,426 T800,430 L800,500 L0,500 Z" fill="#5a7a42" opacity="0.7"/>
+
+      <!-- Grass tufts scattered -->
+      <g fill="#4a6a35" opacity="0.8">
+        <path d="M80,415 l2,-9 l2,9 z"/>
+        <path d="M180,418 l2,-8 l2,8 z"/>
+        <path d="M250,416 l2,-10 l2,10 z"/>
+        <path d="M340,419 l2,-7 l2,7 z"/>
+        <path d="M450,417 l2,-9 l2,9 z"/>
+      </g>
+
+      <!-- Flowers in the right corner with sway animation.
+           Each flower group has its own pivot at the base of the stem
+           so it sways like a stalk in the wind. -->
+      <g class="flower" id="flower-1" style="--pivot-x: 50%; --pivot-y: 100%;">
+        <!-- Stem -->
+        <path d="M660,425 Q662,400 660,375" stroke="#3a6028" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Leaf -->
+        <path d="M660,405 Q650,400 648,408 Q655,412 660,408 Z" fill="#4a7a35"/>
+        <!-- Petals (5) around center -->
+        <circle cx="654" cy="372" r="6" fill="#ffb3c1"/>
+        <circle cx="666" cy="372" r="6" fill="#ffb3c1"/>
+        <circle cx="660" cy="365" r="6" fill="#ffb3c1"/>
+        <circle cx="655" cy="380" r="6" fill="#ffb3c1"/>
+        <circle cx="665" cy="380" r="6" fill="#ffb3c1"/>
+        <!-- Center -->
+        <circle cx="660" cy="375" r="4" fill="#ffd700"/>
+      </g>
+
+      <g class="flower" id="flower-2" style="--pivot-x: 50%; --pivot-y: 100%;">
+        <path d="M700,425 Q702,395 700,365" stroke="#3a6028" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M700,400 Q712,393 714,402 Q706,408 700,403 Z" fill="#4a7a35"/>
+        <!-- Daisy: white petals + yellow center -->
+        <ellipse cx="690" cy="362" rx="5" ry="8" fill="#fafafa"/>
+        <ellipse cx="710" cy="362" rx="5" ry="8" fill="#fafafa"/>
+        <ellipse cx="700" cy="352" rx="5" ry="8" fill="#fafafa"/>
+        <ellipse cx="700" cy="372" rx="5" ry="8" fill="#fafafa"/>
+        <ellipse cx="693" cy="355" rx="5" ry="8" fill="#fafafa" transform="rotate(-30 693 355)"/>
+        <ellipse cx="707" cy="355" rx="5" ry="8" fill="#fafafa" transform="rotate(30 707 355)"/>
+        <ellipse cx="693" cy="370" rx="5" ry="8" fill="#fafafa" transform="rotate(30 693 370)"/>
+        <ellipse cx="707" cy="370" rx="5" ry="8" fill="#fafafa" transform="rotate(-30 707 370)"/>
+        <circle cx="700" cy="362" r="5" fill="#ffc107"/>
+      </g>
+
+      <g class="flower" id="flower-3" style="--pivot-x: 50%; --pivot-y: 100%;">
+        <path d="M740,425 Q738,400 740,378" stroke="#3a6028" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M740,408 Q728,402 726,412 Q734,418 740,412 Z" fill="#4a7a35"/>
+        <!-- Tulip-style: closed petal cluster -->
+        <path d="M732,378 Q740,365 748,378 Q748,388 740,388 Q732,388 732,378 Z" fill="#e8546c"/>
+        <path d="M736,378 Q740,370 744,378" stroke="#c0364d" stroke-width="0.8" fill="none"/>
+      </g>
+
+      <g class="flower" id="flower-4" style="--pivot-x: 50%; --pivot-y: 100%;">
+        <path d="M620,425 Q622,408 620,390" stroke="#3a6028" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Smaller wildflower -->
+        <circle cx="616" cy="388" r="3.5" fill="#9b6dd0"/>
+        <circle cx="624" cy="388" r="3.5" fill="#9b6dd0"/>
+        <circle cx="620" cy="383" r="3.5" fill="#9b6dd0"/>
+        <circle cx="620" cy="393" r="3.5" fill="#9b6dd0"/>
+        <circle cx="620" cy="388" r="2" fill="#ffd700"/>
+      </g>
+
+      <!-- Girl + bicycle group, translated horizontally via JS -->
+      <g id="bike-group">
+        <!-- BICYCLE -->
+        <!-- Wheels -->
+        <circle cx="-30" cy="370" r="28" fill="none" stroke="#1a1118" stroke-width="3"/>
+        <circle cx="-30" cy="370" r="4" fill="#1a1118"/>
+        <circle cx="50" cy="370" r="28" fill="none" stroke="#1a1118" stroke-width="3"/>
+        <circle cx="50" cy="370" r="4" fill="#1a1118"/>
+
+        <!-- Spokes (rotating with wheels via animation) -->
+        <g id="bike-wheel-back">
+          <line x1="-30" y1="345" x2="-30" y2="395" stroke="#888" stroke-width="1"/>
+          <line x1="-55" y1="370" x2="-5" y2="370" stroke="#888" stroke-width="1"/>
+          <line x1="-48" y1="352" x2="-12" y2="388" stroke="#888" stroke-width="1"/>
+          <line x1="-48" y1="388" x2="-12" y2="352" stroke="#888" stroke-width="1"/>
+        </g>
+        <g id="bike-wheel-front">
+          <line x1="50" y1="345" x2="50" y2="395" stroke="#888" stroke-width="1"/>
+          <line x1="25" y1="370" x2="75" y2="370" stroke="#888" stroke-width="1"/>
+          <line x1="32" y1="352" x2="68" y2="388" stroke="#888" stroke-width="1"/>
+          <line x1="32" y1="388" x2="68" y2="352" stroke="#888" stroke-width="1"/>
+        </g>
+
+        <!-- Frame: proper bicycle geometry.
+             Bottom bracket at (5, 358), seat at (10, 325) below the torso,
+             head tube top at (45, 325) so top tube runs below the body. -->
+        <!-- Chain stay: BB → rear axle -->
+        <line x1="5" y1="358" x2="-30" y2="370" stroke="#8b5cf6" stroke-width="4" stroke-linecap="round"/>
+        <!-- Seat stay: rear axle → seat -->
+        <line x1="-30" y1="370" x2="10" y2="325" stroke="#8b5cf6" stroke-width="4" stroke-linecap="round"/>
+        <!-- Seat tube: BB → seat -->
+        <line x1="5" y1="358" x2="10" y2="325" stroke="#8b5cf6" stroke-width="4" stroke-linecap="round"/>
+        <!-- Down tube: BB → head tube top -->
+        <line x1="5" y1="358" x2="45" y2="325" stroke="#8b5cf6" stroke-width="4" stroke-linecap="round"/>
+        <!-- Top tube: seat → head tube top (now horizontal, below the torso) -->
+        <line x1="10" y1="325" x2="45" y2="325" stroke="#8b5cf6" stroke-width="4" stroke-linecap="round"/>
+        <!-- Fork: head tube top → front axle -->
+        <line x1="45" y1="325" x2="50" y2="370" stroke="#8b5cf6" stroke-width="4" stroke-linecap="round"/>
+
+        <!-- Pedal crank — bottom bracket at (5, 358). Crank arms and pedals
+             have IDs so the JS can rotate them around the BB each frame. -->
+        <g id="bike-pedals">
+          <circle cx="5" cy="358" r="3" fill="#3a3a3a"/>
+          <!-- Crank arms -->
+          <line id="crank-arm-front" x1="5" y1="358" x2="17" y2="370" stroke="#3a3a3a" stroke-width="2"/>
+          <line id="crank-arm-back" x1="5" y1="358" x2="-7" y2="346" stroke="#3a3a3a" stroke-width="2"/>
+          <!-- Pedals -->
+          <rect id="pedal-front" x="13" y="367" width="9" height="4" rx="1" fill="#1a1118"/>
+          <rect id="pedal-back" x="-12" y="343" width="9" height="4" rx="1" fill="#1a1118"/>
+        </g>
+
+        <!-- Handlebar — at top of head tube (45, 325) -->
+        <line x1="45" y1="325" x2="50" y2="305" stroke="#1a1118" stroke-width="3" stroke-linecap="round"/>
+        <line x1="40" y1="305" x2="62" y2="305" stroke="#1a1118" stroke-width="3" stroke-linecap="round"/>
+
+        <!-- Seat — at top of seat tube (10, 325), below body -->
+        <ellipse cx="10" cy="323" rx="11" ry="3" fill="#1a1118"/>
+        <!-- Saddle nose pointing forward -->
+        <path d="M10,323 Q18,323 20,325 Q18,326 10,326 Z" fill="#1a1118"/>
+
+        <!-- GIRL -->
+        <!-- Hip / pelvis sits ON the saddle -->
+        <ellipse cx="13" cy="320" rx="14" ry="6" fill="#c0496a"/>
+
+        <!-- Legs — driven by JS via inverse kinematics each frame.
+             Hip at (13, 320). Each leg has a thigh and shin segment. -->
+        <line id="leg-back-thigh"  x1="13" y1="320" x2="3" y2="335"   stroke="#ff7eb6" stroke-width="6" stroke-linecap="round"/>
+        <line id="leg-back-shin"   x1="3"  y1="335" x2="-7" y2="346"  stroke="#ff7eb6" stroke-width="6" stroke-linecap="round"/>
+        <line id="leg-front-thigh" x1="13" y1="320" x2="18" y2="345"  stroke="#ff7eb6" stroke-width="6" stroke-linecap="round"/>
+        <line id="leg-front-shin"  x1="18" y1="345" x2="17" y2="370"  stroke="#ff7eb6" stroke-width="6" stroke-linecap="round"/>
+
+        <!-- Shoes — positioned by JS to follow the rotating pedals -->
+        <ellipse id="shoe-back"  cx="-7" cy="345" rx="6" ry="2.5" fill="#1a1118"/>
+        <ellipse id="shoe-front" cx="17" cy="369" rx="6" ry="2.5" fill="#1a1118"/>
+
+        <!-- Upper body (torso, arm, head, hair) shifted left to sit over the seat.
+             Internal coordinates unchanged; -25 translation puts the torso center
+             above the pelvis at x≈-2 instead of x≈35. -->
+        <g transform="translate(-25, 0)">
+          <!-- Torso (riding posture, slightly leaned forward) -->
+          <path d="M20,330 Q15,310 25,290 Q40,285 50,290 Q55,310 50,325 Z" fill="#e8546c"/>
+
+          <!-- Neck -->
+          <rect x="36" y="278" width="8" height="10" fill="#f0c4a0"/>
+
+          <!-- Head -->
+          <circle cx="42" cy="270" r="12" fill="#f0c4a0"/>
+
+          <!-- Hair: long, flowing back behind her -->
+          <path d="M30,265 Q22,272 18,290 Q26,295 32,288 Q35,278 36,272 Z" fill="#8b4513"/>
+          <path d="M32,260 Q28,250 35,255 Q42,255 50,260 Q52,268 48,272 Q40,268 32,272 Z" fill="#8b4513"/>
+          <!-- Hair ponytail trailing in wind -->
+          <path d="M30,272 Q15,278 5,285 Q12,290 22,286 Q28,282 32,278 Z" fill="#8b4513"/>
+
+          <!-- Face details -->
+          <circle cx="46" cy="270" r="1" fill="#1a1118"/>
+          <path d="M44,275 Q46,277 48,275" stroke="#a04030" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+
+          <!-- Helmet -->
+          <path d="M30,265 Q42,253 54,265 Q54,260 50,257 Q42,252 34,257 Q30,260 30,265 Z" fill="#5a8fb0"/>
+        </g>
+
+        <!-- Arm reaches from shoulder (after shift, ~25, 295) forward to the handlebar (50, 295) -->
+        <line x1="25" y1="295" x2="48" y2="295" stroke="#e8546c" stroke-width="6" stroke-linecap="round"/>
+        <!-- Hand on grip -->
+        <circle cx="50" cy="295" r="3" fill="#f0c4a0"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="card">
+      <div class="eyebrow">Sundial &mdash; A Timer</div>
+      <h1 class="title">Mark the hours</h1>
+
+      <div class="display" id="display">
+        <span id="hh">00</span><span class="sep">:</span><span id="mm">01</span><span class="sep">:</span><span id="ss">00</span>
+      </div>
+
+      <div class="inputs">
+        <div class="field">
+          <input type="number" id="in-h" min="0" max="23" value="0" inputmode="numeric" pattern="[0-9]*" />
+          <label>Hours</label>
+        </div>
+        <span class="colon">:</span>
+        <div class="field">
+          <input type="number" id="in-m" min="0" max="59" value="1" inputmode="numeric" pattern="[0-9]*" />
+          <label>Minutes</label>
+        </div>
+        <span class="colon">:</span>
+        <div class="field">
+          <input type="number" id="in-s" min="0" max="59" value="0" inputmode="numeric" pattern="[0-9]*" />
+          <label>Seconds</label>
+        </div>
+      </div>
+
+      <div class="scene-select">
+        <label for="scene">Scene</label>
+        <select id="scene">
+          <option value="sun">Sun crossing the sky</option>
+          <option value="cow">Cow drinking water</option>
+          <option value="bike">Girl riding a bicycle</option>
+        </select>
+      </div>
+
+      <div class="controls">
+        <button class="primary" id="btn-start">Begin</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mini-controls" id="mini">
+    <button id="mini-pause" title="Pause">
+      <svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+    </button>
+    <div class="mini-time" id="mini-time">00:00:00</div>
+    <button id="mini-reset" title="Reset">
+      <svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+    </button>
+    <button id="mini-close" title="Hide controls">
+      <svg viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+  </div>
+
+  <button class="mini-reopen" id="mini-reopen" title="Show controls">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+  </button>
+
+  <div class="footer">East &mdash; West</div>
+
+<script>
+(() => {
+  // ---- State ----
+  const state = {
+    totalMs: 0,
+    remainingMs: 0,
+    endsAt: null,
+    status: 'idle', // 'idle' | 'running' | 'paused' | 'finished'
+    rafId: null,
+  };
+
+  // ---- DOM ----
+  const $ = (id) => document.getElementById(id);
+  const stage = $('stage');
+  const sun = $('sun');
+  const sky = document.querySelector('.sky');
+  const stars = document.querySelector('.stars');
+  const hh = $('hh'), mm = $('mm'), ss = $('ss');
+  const inH = $('in-h'), inM = $('in-m'), inS = $('in-s');
+  const btnStart = $('btn-start');
+  const miniPause = $('mini-pause'), miniReset = $('mini-reset'), miniTime = $('mini-time');
+  const miniClose = $('mini-close'), miniReopen = $('mini-reopen');
+  const sceneSelect = $('scene');
+  const waterRect = $('water-rect'), waterSurface = $('water-surface');
+  const waterLine1 = $('water-line-1'), waterLine2 = $('water-line-2');
+  const bikeGroup = $('bike-group');
+
+  // Bike pedaling parts
+  const crankArmFront = $('crank-arm-front'), crankArmBack = $('crank-arm-back');
+  const pedalFront = $('pedal-front'), pedalBack = $('pedal-back');
+  const legBackThigh = $('leg-back-thigh'), legBackShin = $('leg-back-shin');
+  const legFrontThigh = $('leg-front-thigh'), legFrontShin = $('leg-front-shin');
+  const shoeBack = $('shoe-back'), shoeFront = $('shoe-front');
+  const wheelBack = $('bike-wheel-back'), wheelFront = $('bike-wheel-front');
+
+  // Active scene: 'sun' | 'cow' | 'bike'
+  let activeScene = 'sun';
+
+  // Pedal animation state
+  let pedalRafId = null;
+
+  // Mini pause-button SVGs
+  const ICON_PAUSE = '<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+  const ICON_PLAY  = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+
+  // ---- Helpers ----
+  const pad = (n) => String(Math.max(0, Math.floor(n))).padStart(2, '0');
+
+  const renderDisplay = (ms) => {
+    const total = Math.max(0, Math.ceil(ms / 1000));
+    const h = pad(Math.floor(total / 3600));
+    const m = pad(Math.floor((total % 3600) / 60));
+    const s = pad(total % 60);
+    hh.textContent = h;
+    mm.textContent = m;
+    ss.textContent = s;
+    miniTime.textContent = `${h}:${m}:${s}`;
+  };
+
+  const readInputs = () => {
+    const h = Math.max(0, parseInt(inH.value, 10) || 0);
+    const m = Math.max(0, parseInt(inM.value, 10) || 0);
+    const s = Math.max(0, parseInt(inS.value, 10) || 0);
+    return ((h * 3600) + (m * 60) + s) * 1000;
+  };
+
+  // ---- Sun trajectory: parabolic arc, bottom-left → bottom-right ----
+  // Progress p ∈ [0, 1]. x(p) = 8% + 84%·p. y(p) follows a downward-opening
+  // parabola with apex at p=0.5: y(p) = 78vh - 60vh·(4p(1-p))
+  const updateSun = (progress) => {
+    const p = Math.min(1, Math.max(0, progress));
+    const xPct = 8 + 84 * p;                 // 8vw → 92vw
+    const arc  = 4 * p * (1 - p);            // 0 → 1 → 0
+    const yPct = 78 - 60 * arc;              // 78vh → 18vh → 78vh
+    sun.style.setProperty('--sun-x', xPct + 'vw');
+    sun.style.setProperty('--sun-y', yPct + 'vh');
+
+    // Sky color interpolation across phases
+    // 0.0 dawn → 0.25 morning → 0.5 noon → 0.75 dusk → 1.0 night
+    let top, mid, bot, starOp = 0;
+    if (p < 0.25) {
+      const t = p / 0.25;
+      top = lerpColor('#2a1b3d', '#6db4d8', t);
+      mid = lerpColor('#5a3a5e', '#c9e3ec', t);
+      bot = lerpColor('#c97b63', '#f4c98c', t);
+    } else if (p < 0.5) {
+      const t = (p - 0.25) / 0.25;
+      top = lerpColor('#6db4d8', '#4a90b8', t);
+      mid = lerpColor('#c9e3ec', '#a8d4e0', t);
+      bot = lerpColor('#f4c98c', '#f0d49a', t);
+    } else if (p < 0.75) {
+      const t = (p - 0.5) / 0.25;
+      top = lerpColor('#4a90b8', '#8c4a6b', t);
+      mid = lerpColor('#a8d4e0', '#e87a5a', t);
+      bot = lerpColor('#f0d49a', '#f4c98c', t);
+    } else {
+      const t = (p - 0.75) / 0.25;
+      top = lerpColor('#8c4a6b', '#1a1118', t);
+      mid = lerpColor('#e87a5a', '#2a1b3d', t);
+      bot = lerpColor('#f4c98c', '#5a3a5e', t);
+      starOp = t * 0.9;
+    }
+    sky.style.setProperty('--sky-top', top);
+    sky.style.setProperty('--sky-mid', mid);
+    sky.style.setProperty('--sky-bot', bot);
+    stars.style.setProperty('--star-opacity', starOp);
+  };
+
+  // ---- Cow scene: water level decreases linearly with progress ----
+  // Bucket interior: top at y=382, bottom at y=436 (54px tall water column)
+  const updateCow = (progress) => {
+    const p = Math.min(1, Math.max(0, progress));
+    const fullHeight = 54;
+    const remaining = fullHeight * (1 - p);
+    const waterY = 382 + (fullHeight - remaining);
+
+    waterRect.setAttribute('y', waterY);
+    waterRect.setAttribute('height', remaining);
+    waterSurface.setAttribute('cy', waterY);
+    const surfaceShadow = document.getElementById('water-surface-shadow');
+    if (surfaceShadow) surfaceShadow.setAttribute('cy', waterY + 1);
+
+    // Hide surface and shimmer when water is essentially gone
+    const visible = remaining > 1.5 ? 1 : 0;
+    waterSurface.setAttribute('opacity', visible);
+    if (surfaceShadow) surfaceShadow.setAttribute('opacity', visible * 0.5);
+    waterLine1.setAttribute('opacity', (waterY < 395 && remaining > 12) ? 0.6 : 0);
+    waterLine2.setAttribute('opacity', (waterY < 408 && remaining > 25) ? 0.5 : 0);
+    const waterLine3 = document.getElementById('water-line-3');
+    if (waterLine3) waterLine3.setAttribute('opacity', (waterY < 420 && remaining > 38) ? 0.4 : 0);
+  };
+
+  // ---- Bike scene: girl + bicycle translates linearly across the viewBox ----
+  // Bike is fully visible at start and end. Local extents run x≈-55 to x≈75.
+  // Start at translate=60 (back wheel just inside left edge); end at 540
+  // (front wheel just before the flower cluster around x≈620).
+  const updateBike = (progress) => {
+    const p = Math.min(1, Math.max(0, progress));
+    const startX = 60;
+    const endX = 540;
+    const x = startX + (endX - startX) * p;
+    bikeGroup.setAttribute('transform', `translate(${x}, 0)`);
+  };
+
+  // ---- Pedaling animation (continuous, independent of timer progress).
+  // Drives the crank rotation and computes leg knee positions via 2-link IK
+  // so the feet stay glued to the rotating pedals.
+  const BB = { x: 5, y: 358 };       // bottom bracket
+  const HIP = { x: 13, y: 320 };     // hip joint
+  const CRANK_R = 17;                // crank arm length
+  const THIGH = 30;                  // thigh length (hip → knee)
+  const SHIN  = 27;                  // shin length (knee → foot)
+  // Pedal period scales with timer duration: 120 revolutions across the run.
+  // For a 60s timer → 0.5s/rev (fast). For 60min → 30s/rev (slow).
+  // When idle (no timer set yet), use a default cadence for previewing.
+  const DEFAULT_PEDAL_PERIOD_MS = 900;
+  const REVS_PER_TIMER = 120;
+  const getPedalPeriodMs = () => {
+    if (state.totalMs > 0) return state.totalMs / REVS_PER_TIMER;
+    return DEFAULT_PEDAL_PERIOD_MS;
+  };
+  let pedalStart = null;
+
+  // 2-link IK: given hip H and foot F, return knee position K with the knee
+  // bending FORWARD (positive x direction relative to H→F axis).
+  const solveKnee = (Hx, Hy, Fx, Fy) => {
+    const dx = Fx - Hx, dy = Fy - Hy;
+    let d = Math.hypot(dx, dy);
+    // Clamp: if foot is unreachable, straighten the leg
+    const maxReach = THIGH + SHIN - 0.01;
+    if (d > maxReach) d = maxReach;
+    const a = THIGH, b = SHIN;
+    // Law of cosines: angle at hip between H→F and H→K
+    const cosA = (a*a + d*d - b*b) / (2*a*d);
+    const angA = Math.acos(Math.max(-1, Math.min(1, cosA)));
+    // Direction H→F
+    const baseAng = Math.atan2(dy, dx);
+    // Knee bends forward (toward +x), so add angA if foot is below hip
+    // (typical pedaling pose). The sign here gives knee on the front side.
+    const kneeAng = baseAng - angA;
+    return {
+      x: Hx + a * Math.cos(kneeAng),
+      y: Hy + a * Math.sin(kneeAng),
+    };
+  };
+
+  const setLegSegments = (thighEl, shinEl, shoeEl, footX, footY) => {
+    const knee = solveKnee(HIP.x, HIP.y, footX, footY);
+    thighEl.setAttribute('x1', HIP.x);
+    thighEl.setAttribute('y1', HIP.y);
+    thighEl.setAttribute('x2', knee.x);
+    thighEl.setAttribute('y2', knee.y);
+    shinEl.setAttribute('x1', knee.x);
+    shinEl.setAttribute('y1', knee.y);
+    shinEl.setAttribute('x2', footX);
+    shinEl.setAttribute('y2', footY);
+    // Shoe sits on top of the foot point
+    shoeEl.setAttribute('cx', footX);
+    shoeEl.setAttribute('cy', footY - 1);
+  };
+
+  const updatePedalPose = (theta) => {
+    // Front pedal at angle theta, back pedal 180° offset
+    const fx = BB.x + CRANK_R * Math.cos(theta);
+    const fy = BB.y + CRANK_R * Math.sin(theta);
+    const bx = BB.x + CRANK_R * Math.cos(theta + Math.PI);
+    const by = BB.y + CRANK_R * Math.sin(theta + Math.PI);
+
+    // Update crank arms
+    crankArmFront.setAttribute('x2', fx);
+    crankArmFront.setAttribute('y2', fy);
+    crankArmBack.setAttribute('x2', bx);
+    crankArmBack.setAttribute('y2', by);
+
+    // Update pedal rectangles (centered on pedal points, 9x4)
+    pedalFront.setAttribute('x', fx - 4.5);
+    pedalFront.setAttribute('y', fy - 2);
+    pedalBack.setAttribute('x', bx - 4.5);
+    pedalBack.setAttribute('y', by - 2);
+
+    // Update legs via IK
+    setLegSegments(legFrontThigh, legFrontShin, shoeFront, fx, fy - 2);
+    setLegSegments(legBackThigh,  legBackShin,  shoeBack,  bx, by - 2);
+
+    // Wheels rotate at 3x crank speed (gearing). Convert theta (rad) to deg.
+    const wheelAngleDeg = (theta * 3) * (180 / Math.PI);
+    wheelBack.setAttribute('transform', `rotate(${wheelAngleDeg} -30 370)`);
+    wheelFront.setAttribute('transform', `rotate(${wheelAngleDeg} 50 370)`);
+  };
+
+  const pedalLoop = (now) => {
+    if (pedalStart === null) pedalStart = now;
+    const period = getPedalPeriodMs();
+    const elapsed = (now - pedalStart) % period;
+    const theta = (elapsed / period) * Math.PI * 2;
+    updatePedalPose(theta);
+    pedalRafId = requestAnimationFrame(pedalLoop);
+  };
+
+  const startPedaling = () => {
+    if (pedalRafId !== null) return;
+    pedalStart = null;
+    pedalRafId = requestAnimationFrame(pedalLoop);
+  };
+  const stopPedaling = () => {
+    if (pedalRafId !== null) {
+      cancelAnimationFrame(pedalRafId);
+      pedalRafId = null;
+    }
+  };
+
+  // ---- Scene dispatcher ----
+  const updateScene = (progress) => {
+    if (activeScene === 'sun')      updateSun(progress);
+    else if (activeScene === 'cow') updateCow(progress);
+    else if (activeScene === 'bike') updateBike(progress);
+  };
+  const lerpColor = (a, b, t) => {
+    const ah = a.replace('#',''), bh = b.replace('#','');
+    const ar = parseInt(ah.slice(0,2),16), ag = parseInt(ah.slice(2,4),16), ab = parseInt(ah.slice(4,6),16);
+    const br = parseInt(bh.slice(0,2),16), bg = parseInt(bh.slice(2,4),16), bb = parseInt(bh.slice(4,6),16);
+    const r = Math.round(ar + (br - ar) * t);
+    const g = Math.round(ag + (bg - ag) * t);
+    const bl = Math.round(ab + (bb - ab) * t);
+    return `rgb(${r},${g},${bl})`;
+  };
+
+  // ---- Tick loop (rAF + Date.now() for drift-free timing) ----
+  const tick = () => {
+    if (state.status !== 'running') return;
+    const now = Date.now();
+    state.remainingMs = state.endsAt - now;
+
+    if (state.remainingMs <= 0) {
+      state.remainingMs = 0;
+      renderDisplay(0);
+      updateScene(1);
+      finish();
+      return;
+    }
+
+    renderDisplay(state.remainingMs);
+    const progress = 1 - (state.remainingMs / state.totalMs);
+    updateScene(progress);
+
+    state.rafId = requestAnimationFrame(tick);
+  };
+
+  // ---- Transitions ----
+  const start = () => {
+    // Treat 'finished' the same as 'idle' for restart: re-read inputs.
+    if (state.status === 'idle' || state.status === 'finished') {
+      const ms = readInputs();
+      if (ms <= 0) { flashInputs(); return; }
+      state.totalMs = ms;
+      state.remainingMs = ms;
+    }
+    state.endsAt = Date.now() + state.remainingMs;
+    state.status = 'running';
+    stage.classList.add('running');
+    stage.classList.remove('finished');
+    document.body.classList.add('running');
+    document.body.classList.remove('finished');
+    btnStart.textContent = 'Begin';
+    btnStart.disabled = true;
+    miniPause.innerHTML = ICON_PAUSE;
+    miniPause.title = 'Pause';
+    sun.classList.remove('hidden');
+    if (activeScene === 'bike') startPedaling();
+    state.rafId = requestAnimationFrame(tick);
+  };
+
+  const pause = () => {
+    if (state.status !== 'running') return;
+    cancelAnimationFrame(state.rafId);
+    state.remainingMs = state.endsAt - Date.now();
+    state.status = 'paused';
+    btnStart.textContent = 'Resume';
+    btnStart.disabled = false;
+    miniPause.innerHTML = ICON_PLAY;
+    miniPause.title = 'Resume';
+    stopPedaling();
+  };
+
+  const reset = () => {
+    cancelAnimationFrame(state.rafId);
+    state.totalMs = 0;
+    state.remainingMs = 0;
+    state.endsAt = null;
+    state.status = 'idle';
+    stage.classList.remove('running', 'finished');
+    document.body.classList.remove('running', 'finished', 'controls-hidden');
+    btnStart.textContent = 'Begin';
+    btnStart.disabled = false;
+    renderDisplay(readInputs());
+    updateScene(0);
+    stopPedaling();
+    // Reset pedal pose to starting position (front pedal down, back up)
+    updatePedalPose(Math.PI / 2);
+  };
+
+  const finish = () => {
+    cancelAnimationFrame(state.rafId);
+    state.status = 'finished';
+    stage.classList.remove('running');
+    stage.classList.add('finished');
+    document.body.classList.remove('running', 'controls-hidden');
+    document.body.classList.add('finished');
+    btnStart.disabled = false;
+    btnStart.textContent = 'Begin';
+    stopPedaling();
+    // Gentle audio chime via Web Audio
+    chime();
+  };
+
+  const flashInputs = () => {
+    [inH, inM, inS].forEach(el => {
+      el.style.borderColor = 'var(--dusk-1)';
+      setTimeout(() => { el.style.borderColor = ''; }, 600);
+    });
+  };
+
+  // ---- Audio ----
+  // Shared AudioContext primed on first user gesture (required by iOS Safari).
+  let audioCtx = null;
+  const primeAudio = () => {
+    if (audioCtx) return;
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) { /* audio unsupported — silent */ }
+  };
+  const chime = () => {
+    if (!audioCtx) return;
+    try {
+      // Resume in case the context was suspended (autoplay policy)
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const ctx = audioCtx;
+      [523.25, 659.25, 783.99].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        const t0 = ctx.currentTime + i * 0.18;
+        gain.gain.setValueAtTime(0, t0);
+        gain.gain.linearRampToValueAtTime(0.18, t0 + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 1.2);
+        osc.start(t0);
+        osc.stop(t0 + 1.3);
+      });
+    } catch (e) { /* silent */ }
+  };
+
+  // ---- Wire up ----
+  btnStart.addEventListener('click', () => { primeAudio(); start(); });
+
+  // Mini pause toggles between pause and resume based on state
+  miniPause.addEventListener('click', () => {
+    if (state.status === 'running') pause();
+    else if (state.status === 'paused') start();
+  });
+  miniReset.addEventListener('click', reset);
+  miniClose.addEventListener('click', () => {
+    document.body.classList.add('controls-hidden');
+  });
+  miniReopen.addEventListener('click', () => {
+    document.body.classList.remove('controls-hidden');
+  });
+
+  // Scene selector
+  sceneSelect.addEventListener('change', (e) => {
+    activeScene = e.target.value;
+    document.body.classList.toggle('scene-cow', activeScene === 'cow');
+    document.body.classList.toggle('scene-bike', activeScene === 'bike');
+    // Start/stop pedaling based on whether bike scene is now active and timer is running
+    if (activeScene === 'bike' && state.status === 'running') {
+      startPedaling();
+    } else {
+      stopPedaling();
+    }
+    // Paint the new scene's idle state
+    updateScene(state.status === 'idle' || state.status === 'finished' ? 0 : 1 - (state.remainingMs / state.totalMs));
+  });
+
+  [inH, inM, inS].forEach(el => {
+    el.addEventListener('input', () => {
+      if (state.status === 'idle') renderDisplay(readInputs());
+    });
+  });
+
+  // Initial paint — all scenes painted to their idle state
+  renderDisplay(readInputs());
+  updateSun(0);
+  updateCow(0);
+  updateBike(0);
+  updatePedalPose(Math.PI / 2); // front pedal at bottom, back at top
+})();
+</script>
+</body>
+</html>
