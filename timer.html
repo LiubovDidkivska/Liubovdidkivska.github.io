@@ -2,8 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Sundial</title>
+<!-- PWA: installable to home screen, runs fullscreen when launched as standalone -->
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Sundial%20Timer%22%2C%22short_name%22%3A%22Sundial%22%2C%22description%22%3A%22A%20custom%20timer%20with%20serene%20scenic%20animations%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22fullscreen%22%2C%22orientation%22%3A%22any%22%2C%22background_color%22%3A%22%23f4ead5%22%2C%22theme_color%22%3A%22%232a1b3d%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage/png%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAGSUlEQVR42u3dP24bRxiGcXKhLi4Dn8Cd60Dn0FVyEF/F5zBSu9MJjJR27RSBAycIJZI7O/P9%2Bb21IZm7zzPvN8OleD5NzNcvn7%2BfRK7Im7fvzzN%2Bzxnw0lmIM%2Bilswxn4EtnEc7Al84ibOCX7NnD4Rn40rkNNvBL5zbYwC%2BdJdjAL50l2MAvnSXYwC%2BdJdjAL50l2MAvnSXYXBrpnM3qL51b4Az%2BY/PLp9%2Bf9v6Mb48fPrqS4/Lzu8UECAI5OQIIAP74wBNirAQESA48IQYJAP460JPhegkIUBx6MhAA%2BER4WYCu8HcGnwh/p6UAwCdCSwGAT4SWAgCfCBcFqAw/8InwWjbwS%2BfrWa4BgK8N2jYA%2BF3nlg0AfG3QVoAU8L97dz8kz89PJCBADvj3gJ5cjKwSpBQgDPgzgU8iRDYR0gmwHP5I0AeVIZMEqQRYBn8G6IPJkEWCNAIsgT8z%2BAFEyCBBCgGmwl8J%2BgAyRJcgvADT4O8A/iIRIkuwgb8p/BNfd%2BT3asI2wJSL1hX8RW0QsQlCCnA4/MBfJkI0CTbwy8zrE20c2sAvnSUIMwIdelGAH3IkijAO1f9%2BAPC7ftEFOGz1B3/o6xhhFFo%2BAqWC/9ffPl39b//849E4FH8UWipAePhvAb6LEMUkeFDVB0J/6edmluHHNU7wSbXQDTB89d8L/1HgV26FwRKsaIGtBPx7wV8B/%2BrfHTAruKhxDHrv6h8FvqwSFDhlmz4ChRh9IgOXcSxKPApt4A%2BWjG0wuAlmjkJ5R6CK8JNgeqYJMNTqyvCTYGoL1H8WKPMm0wlRDQGWrv7ZIcr2/0/WAlvpi1tlBW0sQXoBhlncFf7mEhzdAj32ACIrBLD6a4HoLbCBxOvTAJVWf9ECZRrA6GMUytgAvrNLsnAVtwGs/log8x5ApOUm2PgjmcagmA1g/DEGGYFEkgkwpJ6c%2B9fOgPs7cgzSAKIBzMFePwFskqThfR4mgONPmZlRvNkDiBFILUrX%2B60BRAOY/6XrPkADiAYwD0rX%2B64BRAOIECBrKn4bo9dPAJEUAjgClZXZy9/6BnAC1DuL73%2BNEajrHGz%2BJ4AIAUTaC9BtHDD%2BEECEAB1XRas/AUQI0HF1tPoToC0k4CeACAE6rpZWfwK0hQb8BGgLD/gJ0BYi8DcQ4Pn5CUyN4Z91/48S4Nvjh4%2BgAv%2Bq7OWv3zFodLjAPzUPLV/1D8gi/W194NsEt4UO/BqgZRsAXwNEOAn4B8ZZQM78XZET4L5rgJdW5ZGtAPiQOX/98vn7iB%2B0%2B%2B8DZfjzKLcIAfjDG2DEEbwGsIrbA5gHpev99nkA0QAjkuqRCEmfUbzFagBjkPHHCCRCAJF8AgyZy4xBxp%2BJ%2B00NIBrAJkm63tfhAjgOlSMzmi8jkBiB1KV0vZ%2BHCGAMkixcxR6BtIDVP%2BsINMxWEoD/wKnCJlhsgrWAdFz9NYBogDQ7dy1g9W/fACRwnzIKMNRiErSBf8b7SfYAYg%2BgBaTj6p%2B7AUjgfmQTYLjVJCgJ/8xnyaY3AAnAHwX%2BOptgErjumQTwuLRE4WIr82K1gNHnjjyUvCkZ/tQ68PuOQIdbrw1Swb9yJF6%2BCSYB%2BNs2AAnA33oEMrO6fqsz7DvCRmT394y9FpvjMOBHOQoP1QCHXxRtAP7oIxAJwN92BJo6DhmJpi8MEZ8ACCvANAm6izCpEaM%2B/hL6FGjaRes6FjWHP3wDTG%2BCLm0wUfjoDz6mEGC6BBVlWNByGZ76TSPAMgmyi7BovMvyyHsqAZZKkEmGxXuaTJ/3SCdACAkiyhBkI5/tw04pBQgnwgohgp1cZf2UX2oBQkowWowER7SZP%2BKaXoA0EhRN9s93lxCACMC/N5ubIp2vc6kG0AbAb90A2sD1vLkBTqfTqWoLaAPgE4AIwCcAEYBPACIA//8F6CxBdxE6Hxa8efv%2BTICmIjglI0A7GUD/ggAkqCkD6C/D/689AAFqCAH4HQKQIJ8QgL8ffgIkkQPkEwUggXSB/3S68DDcf/%2BRSEX4Lwog0iXbLbaIVFr9X20AEkhl%2BK8agUggVeG/eg9AAqkI/02bYBJINfhvEoAEUg3%2BmwUggVSC/3S68E7wtfGOsWQF/%2B4G0AZSBf7dDaANJCv4wwUggmQC/zAByCDRof85fwE5jS7gDaPeBQAAAABJRU5ErkJggg%3D%3D%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image/png%22%2C%22purpose%22%3A%22any%20maskable%22%7D%2C%7B%22src%22%3A%22data%3Aimage/png%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAARbklEQVR42u3dQU7c6BYF4CqLGQwRK6gZY8Q62AoLyVayDpQxM1aAMiRjetBqKa3uJFVll33vf75vAe8lxv89x9cmvd9xko/3109XAaCmm7v7vatwHBdK0AMoBgqAsAdAKVAABD4ACoECIPQBUAYUAKEPgDKgAAh%2BABQBBUDwA6AIKABCHwBlQAEQ/AAoAhuahD8A5OXS3gUGgLxtQIs/pOAHQBFYVvlXAMIfgI6q59fehQOAvG1AyQ2A8AfANiBoAyD4AbANCNsACH8AbAPCCoDwB0AJWNc%2B/QIAwJa2eiWw2QZA%2BAPAdnk4Jf1lAUAJ2KgACH8A2D4fp5H/cgCgBGxcAIQ/ANTJy2mkvwwAKAFFCoDwB4B6%2BTl1/sMDgBJQrAAIfwCom6dTpz8sACgBRQuA8AeA%2BiVgqvyHAwAuk7OTywkAeRYrAJ7%2BAaDPFmCq9IcBANbJ3anCHwIAWDd/fQMAAIFmFQBP/wDQcwswbfF/CgBsWwK8AgCAQGcVAE//ANB7CzCt8X8CANQqAV4BAECgkwqAp38AGGMLcOVyQX/XL89Pa/9//nj88tWVh772nv5BqCsLMJabu/s/5vtRBUD4g5BXDmCsEqAAgKBXDEABEP4g7JUCSCgBCgAIfIUAFAAFAIS9UgDxBUD4g9BXBmDMEqAAgMBXCEABEP4IfZQBSCgBCgBCH2VAGUABEP4IfZQBV4GEEqAAIPRBGUABUAAQ%2BqAMEFkAhD9CH5QBxi8BCgCCHxQBFAAFAMEPigBxBUD4I/RBGSCjBCgACH5QBFAAFAAEPygCKAAg%2BEERYOwCIPwR%2BqAMkFMCFAAEPygCKAAg%2BEERIKEATC4Dwh%2BcB/LYAGDQgW0AgRuAvfBH8IMiQOgGQAFA8IMigAIAgh8UAQbnI0CEPzhX2ACAAQW2ASgAIPhBEWBIk/BH%2BIPzR%2BAGQAHA4AHbAAI3AC4Bwh%2BcS2wAwIAB2wBsAED4g/OKDQAGCWAbgA0Awh9wjrEBwMAAbAOwAUD4A843CgCGA%2BCcU4ZXABgIozgc1lvvvr25ZwbglYACoAAIf4S7kqAEoAAg/BHyyoESgAKA4EfYKwWKAAoAwh%2BBrxAoASgACH8EvkKgBKAAIPwFPgqBEoACgOAX%2BigDigAKAMJf4KMQKAEoAAh/oY8yoASgACD8BT%2BKgBKAAoDwF/ooA0oACgDCX/CjCCgBKAAIfqGPMqAIoAAIfwQ/ioASgAIg/BH8KAJKAAqA8Bf6oAwoASgAwl/wgyKgBCgACoDwF/ygCCgBCgDCX/CDIqAEBJhcAuEv/MH9Z17ZAOAwGbxgG2AToAAg/AU/KAJKgAKA8Bf8oAgoAUPwDYDwF/7gvjXPbABwWAxQsA2wCVAAEP6CHxQBJWBIXgEIf%2BEP7m9zLtCVS4DBCBvc67YB2AAQ34qFP%2B57847V%2BQbAYTAAYWuh2wDfA9gACH/hD7YB5h8KgJvfsAPnwhzk0rwCcNMbcFBN4CsBrwNsAIS/8AcCz4tNgAKAYQY4N6zAKwAt1wCD6oJeCXgVYAMg/IU/EHievApQANzUhhWgBKAAuJkNKUAJYEn%2BWwAYTNDxrPlvCWADoMUKf1C6zU8UADevIQRKgDnKH/k1QDet4XOq24eXxf63vn97dFqYLeB1gF8PXJ5vABD%2BawT9qf8figGnnkffBGAD4Olf%2BBcNe9sCbAJsARQA4S/8Bb5CgBKgBCgAwl/4C31lACVACViVbwAYO/xHDv1f/T2VAXwTgA2Ap//Y8E8JflsBQjcBtgAKgPAX/oJfEUAJ4AxeAdA//IX%2B8ddHGcg8x14HYAPg6X%2Bo8Bf8tgLEbwJsAc7nnwIW/sI/fStAzibAHEYBoO2QuH14EV6uJUoA83kFoHX2GA6C6vK8Fsgx4OsArwJsAIS/8Md1JnAT4FWAAsBIw8CK2jVHCUAB0DIDwx/XHyXAFuBifAMg/AUPv%2BfbgPEN9k2A7wFsABD%2B%2BLkQuAlAAfD0L2Tw88G8RgGgZNv30VmvEuBnZS6gAGiTDrmnStsAlABzWwEQ/g63EFECMCfMbwUAh1p4KAGYFygA2iNCw88TzHEFgNA2LyyUAMwNFACtUfijBGB%2BmOcKAMIfJQBzBAVAWxQK%2BHmDua4A0LO1CwMlAPMEBUBLFP4oAZgr5rsC4OYQ/igBmC/mvAKAoY/7AVAAtMLYdg6YM%2Ba9AkC3Q%2BlpD/eFeYMCoA0a8uD%2BwNxXABi5jRvuuE/MHRQAHELA/EEBKM8ayFMd7hfMfwUA7dswx32DLYACoP0BIAcUALRuT3G4f7AFUAC0PuEP7iP6l4DULYANAAAoAJ7%2BtWxPbbifsAVQAAAABQBP/34IuK8YdQugAAzOr/4Z0ri/QD7YAGjVAOaVDYB25zB5OsN9RnIJSNoC2AAAgA2Ap38tGsAWQAEAa1ncb6AAoD0DmGMKQBt%2B9c/TGO47kBs2AFozgHlmA%2BAS4CkM9x8oAMOx/gdAftgA9GBdBphrKACszvoV9yEoAJ21XN9oyYAtgBxRAAAABUA7vjxrVypxP5pzKACn8vU/APLEBgAAUAAKshYDzDsUgHms/8/kfSvuS4jJFRsAbRjA3LMBAAAUgIas/wGQLzYA9VmDAeYfCgCb8aEV7k9QANB%2BAcxBBaAN7/8BkDM2AACAAlCMtReAeagAzGf9D4C8sQHgFL6wxn0KNgAAgALAJXjfBWAuKgAAgAJwBh8AAiB3bABqs%2BYCMB8VAABAAQAAFIBjeP8PgPyxAajN%2By0Ac1IBAAAUAABAAQAAFID/1eoDDO%2B1AIabl50/BLQBAAAbAABAAQAAFADO5P0/gLmpAAAACsCZ/BPAC/r%2B7dFFwH0KWXlkAwAANgAAgALAfD5kATA/FQAAQAEAABQANuQLa9yfoABU51cAAZBLNgAAgAIAACgAW/IrLADmqAJAeT60wn0JCgAAoAAAAAoAAKAAMA7vW3E/ggIAACgAAIACsA3/DPAKrF1xH8Lw%2BWQDcCn%2B8QoA81QBAAAUAOqzfsX9BwoAAKAA4CkM3HegAAAACgCexsD9BgoAAKAAAAAKAC1Yy%2BI%2BAwUAAFAA8HQG7i9QADCkwX0FCgAAoADgaQ3cT6AAAAAKAJ7acB8BCgCGN%2B4fQAEAABQAPMXhvgEUAAxz3C%2BAAgAAKAB4qsN9AigAGO64P0ABcAkw5HFfgAIAACgA4GkP9wMoABzv7e3J0Ef4g3mqACzkx%2BOXr35shj9%2B/iCfbAAQAvi5AwoAwgA/b0ABQCjg5wwoAAgH/HwBBQAhgZ8rKAAgLPDzBAUAhAZ%2BjqAAcDL/eIXw8PMDc1QBACHi5wZUceUSUCJMbh9eXAzBD9gA/JZ/Dli44OcDcimwACBk8HMB5vEKgJph45WA4AdsABA%2BuP6AAtCLX2GZF0KCyDXH/EQBwNMorjOwDN8A0CucfBsg%2BIHsDYBfBQwOK4HlWoI8yi0ACC8XwfUDFIDafMjiCdY1A3OzGN8AMNbTrG8EPO0DCgDBYacICH5AAUAREPwA/7b/eH/97PwXuH557vOe6HDwmwtbGrkMCH1G0uj9f%2BffSLMBIPPJeIQyIPQBBQBmhmeHQiDwAQUAVgjXLUuBsAcUgIG8vT35DqB5KVi6GAh6%2BO%2BcZBXtPwLc7XwICKAArK/7P0nvXwIEgEAKAAAoAFyc91sA5qMCsAz/aWAA5I4NAACgABRkzQVgLioAAIACAAAoAMfyISAA8sYGoD7vuwDMQwUAAFAAzuQ1AAByxgagPmsvwBw0BxUAAEAB0H4BzD8UgGP5DgAA%2BWIDAAAoAEVZgwHmHgrAfF4DACBXbAC0YQDzDgUAABi2AHgNAIA8sQHowVoMMOdQAAAABeAMLdc22jHg6V%2BOKAAAgAKgJQOYaygAx/DbAADIDxsAAEABKMy6DDDPUADm8RoAALlhA6A1A5hjNgAuAQAoAMNqu87RngFP//JCAQAAFABbAABzS04oAA4TgHmFAhDf7gCQDwqAVg1gTqEAAIACEKb1mke7BswnuaAAAAAKgC0AgLnk6V8BcNgAzCMUAK0PADmgAGjdAOaQDYD2B4D5rwCgfQOYPwoADiGAuaMAjMZrAABzXwFAGwcwbxQAbdChBBhpznj6VwAAQAHAFgDA078CoAQ4pADCXwHAYQXMExQAWwAAzHUFAK0dMEdQALRFhxcwP8xzBQCHGDA3UAC0RgDMcQUAbR4wL1AAtEeHGjAnzG8FwE3kcAPmg/BXAHDIAXMBBUCbBMC8VgDQ9gHzAAVAq3TogbQ54OlfAXBzKQGA8EcBQAkAnHsUAC3TMADhby4rALjZlAAQ/uaxAoDhADjfKAAEtk5DApxrc1gBQAkAnGfzVwHA0ACcYxQAhm%2Bhhgc4v%2BauAoASADi35q0CgGECOK8oAAzfSg0VcE7NWQUAJQBwPs1XBQAlAHAuzVUFAMMGcB5RAGwBDB3AOTRPFQAlwPABnD9zVAFw8xpCgHMn/Fd25RKw6DA6HBxYEPzYABDXYg0ncL7MTQUAJQBwrsxLBUAJUAIA58mcLGL/8f766TKs6/rlOSscfRcAgl/42wBgiAHODQpApMiWa5iB82IuluIVwIbiXgX8wysBEPzC3wbAJsCQA4Q/CoCb37AD58H8YwVeARQR%2Bzpgt/NKAMEv/LEBsAkwBMF9b96xBv8tAGoNQ9sABD/YAGjFhiO4v805LsM3AAVFfw/wM9sABL/wRwFQAhQBEPzCn%2BV4BeCwGKLgvjXPbACwCbANAMEv/BUAlABFAAS/8FcAUAIUARD8wn8MvgFwmAxfcP%2BZVzYA2ATYBoDgF/4KAEqAIgCCX/grACgBigCCH%2BGvAKAEKAMIfYS/AoASoAgg%2BIU/CgBKgCKA4Bf%2BKAAoAsoAQl/wowCgBCgCCH7hjwKAEqAMIPSFPwoASoAigOAX/igAKAHKAEJf%2BKMAoAQoBAh84Y8CgCKgDAh9BD8KAEqAQiDwEf4oACgBCoHAR/ijAKAEKAQCH%2BGPAqAIuApKgbBH8CsAKAEoB0Je%2BKMAoASgJAh34Y8CgCIACH6GMbkEGArgnKMAYDgYDuB8E8ArAH7JKwEQ/NgAYGgAzjE2ANgGAIIfGwAME8B5xQYA2wBA8GMDgCEDOJfYAGAbAAh%2BNt8A3Nzd710GDB9w/gjbAOx2u50tALYBIPhRAEARAMHP4HwEiCEFzhU2AGAbAIIfBQAUARD8jFsAlAAUARD85Li5u98rACgCIPgJLAA%2BAsSwA%2BeBQDYA2AaA4CdwA6AAoAiA4Ce5ACgBKAMg9MkI/93up1cACgCKAAh%2BFABQBEDwowCAIgCCn2ELgBKAMgBCn/HDXwFAEQDBjwKgAKAIgOAntgAoASgDIPQZO/wVAJQBEPooAAoAygAIfaILgBKAMoDQh3HDXwEAZUDogwKgBIAyIPQhIfwVAFAIBD4oAEoAKANCHxLCXwEApUDYgwKgAIBCIPBBAVACQCkQ9jBk%2BCsAoBgIelAAlABQDoQ8JIT/SQVACQBlQajDGOGvAABAaAGYLvE/CgDUDf%2BTCwAAMIaTC4AtAAD0fvo/ewOgBABA3/A/uwAAAL2dXQBsAQCg59P/7A2AEgAA/cJ/dgEAAHqaXQBsAQCg19P/YhsAJQAA%2BoT/YgVACQCAPuG/aAEAAPpYtADYAgBA/af/i2wAlAAAqB3%2BFykASgAA1M/VqdMfFgCEf/ECoAQAQN0cnTr/4QFA%2BBctAEoAANTLzWmkvwwACP9iBUAJAIA6OTmN/JcDAOFfpAAoAQCwfS5OSX9ZABD%2BfysRwh/vr59uAQAEf8AGwDYAAOEfXgCUAACE/7pKhq5XAgAI/pANgG0AAMI/fANgGwCA4A/cANgGACD8wzcAtgEACP7wAqAIACD4lzG5yACQl0vtg9Q2AADBH1gAlAEAhH54AVAEABD8wQVAEQBA8AcXAGUAAKEfXgCUAQDSQz%2B%2BACgEAKT/SrkCoBQACPtAfwGpl/Nj7O0d3AAAAABJRU5ErkJggg%3D%3D%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image/png%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D" />
+<meta name="theme-color" content="#2a1b3d" />
+<!-- iOS Safari standalone mode (Add to Home Screen runs without browser chrome) -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Sundial" />
+<meta name="mobile-web-app-capable" content="yes" />
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAGSUlEQVR42u3dP24bRxiGcXKhLi4Dn8Cd60Dn0FVyEF/F5zBSu9MJjJR27RSBAycIJZI7O/P9+b21IZm7zzPvN8OleD5NzNcvn7+fRK7Im7fvzzN+zxnw0lmIM+ilswxn4EtnEc7Al84ibOCX7NnD4Rn40rkNNvBL5zbYwC+dJdjAL50l2MAvnSXYwC+dJdjAL50l2MAvnSXYXBrpnM3qL51b4Az+Y/PLp9+f9v6Mb48fPrqS4/Lzu8UECAI5OQIIAP74wBNirAQESA48IQYJAP460JPhegkIUBx6MhAA+ER4WYCu8HcGnwh/p6UAwCdCSwGAT4SWAgCfCBcFqAw/8InwWjbwS+frWa4BgK8N2jYA+F3nlg0AfG3QVoAU8L97dz8kz89PJCBADvj3gJ5cjKwSpBQgDPgzgU8iRDYR0gmwHP5I0AeVIZMEqQRYBn8G6IPJkEWCNAIsgT8z+AFEyCBBCgGmwl8J+gAyRJcgvADT4O8A/iIRIkuwgb8p/BNfd+T3asI2wJSL1hX8RW0QsQlCCnA4/MBfJkI0CTbwy8zrE20c2sAvnSUIMwIdelGAH3IkijAO1f9+APC7ftEFOGz1B3/o6xhhFFo+AqWC/9ffPl39b//849E4FH8UWipAePhvAb6LEMUkeFDVB0J/6edmluHHNU7wSbXQDTB89d8L/1HgV26FwRKsaIGtBPx7wV8B/+rfHTAruKhxDHrv6h8FvqwSFDhlmz4ChRh9IgOXcSxKPApt4A+WjG0wuAlmjkJ5R6CK8JNgeqYJMNTqyvCTYGoL1H8WKPMm0wlRDQGWrv7ZIcr2/0/WAlvpi1tlBW0sQXoBhlncFf7mEhzdAj32ACIrBLD6a4HoLbCBxOvTAJVWf9ECZRrA6GMUytgAvrNLsnAVtwGs/log8x5ApOUm2PgjmcagmA1g/DEGGYFEkgkwpJ6c+9fOgPs7cgzSAKIBzMFePwFskqThfR4mgONPmZlRvNkDiBFILUrX+60BRAOY/6XrPkADiAYwD0rX+64BRAOIECBrKn4bo9dPAJEUAjgClZXZy9/6BnAC1DuL73+NEajrHGz+J4AIAUTaC9BtHDD+EECEAB1XRas/AUQI0HF1tPoToC0k4CeACAE6rpZWfwK0hQb8BGgLD/gJ0BYi8DcQ4Pn5CUyN4Z91/48S4Nvjh4+gAv+q7OWv3zFodLjAPzUPLV/1D8gi/W194NsEt4UO/BqgZRsAXwNEOAn4B8ZZQM78XZET4L5rgJdW5ZGtAPiQOX/98vn7iB+0++8DZfjzKLcIAfjDG2DEEbwGsIrbA5gHpev99nkA0QAjkuqRCEmfUbzFagBjkPHHCCRCAJF8AgyZy4xBxp+J+00NIBrAJkm63tfhAjgOlSMzmi8jkBiB1KV0vZ+HCGAMkixcxR6BtIDVP+sINMxWEoD/wKnCJlhsgrWAdFz9NYBogDQ7dy1g9W/fACRwnzIKMNRiErSBf8b7SfYAYg+gBaTj6p+7AUjgfmQTYLjVJCgJ/8xnyaY3AAnAHwX+OptgErjumQTwuLRE4WIr82K1gNHnjjyUvCkZ/tQ68PuOQIdbrw1Swb9yJF6+CSYB+Ns2AAnA33oEMrO6fqsz7DvCRmT394y9FpvjMOBHOQoP1QCHXxRtAP7oIxAJwN92BJo6DhmJpi8MEZ8ACCvANAm6izCpEaM+/hL6FGjaRes6FjWHP3wDTG+CLm0wUfjoDz6mEGC6BBVlWNByGZ76TSPAMgmyi7BovMvyyHsqAZZKkEmGxXuaTJ/3SCdACAkiyhBkI5/tw04pBQgnwgohgp1cZf2UX2oBQkowWowER7SZP+KaXoA0EhRN9s93lxCACMC/N5ubIp2vc6kG0AbAb90A2sD1vLkBTqfTqWoLaAPgE4AIwCcAEYBPACIA//8F6CxBdxE6Hxa8efv+TICmIjglI0A7GUD/ggAkqCkD6C/D/689AAFqCAH4HQKQIJ8QgL8ffgIkkQPkEwUggXSB/3S68DDcf/+RSEX4Lwog0iXbLbaIVFr9X20AEkhl+K8agUggVeG/eg9AAqkI/02bYBJINfhvEoAEUg3+mwUggVSC/3S68E7wtfGOsWQF/+4G0AZSBf7dDaANJCv4wwUggmQC/zAByCDRof85fwE5jS7gDaPeBQAAAABJRU5ErkJggg==" />
+<link rel="icon" type="image/png" href="data:image/png;base64,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" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet" />
@@ -32,6 +42,9 @@
     font-family: 'Fraunces', serif;
     color: var(--ink);
     background: var(--paper);
+    /* iOS Safari standalone: respect safe areas (notch, home indicator) */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    box-sizing: border-box;
   }
 
   /* Sky — color shifts via CSS var driven by JS progress */
@@ -105,7 +118,118 @@
   body.scene-cow .ground { opacity: 0; }
   body.scene-cow .footer { display: none; }
 
-  /* Bike scene */
+  /* Day/night cow toggle.
+     - cow-night class hides the standing cow group and shows the sleeping cow.
+     - At night the scene background becomes a moonlit dusk-blue gradient. */
+  #cow-sleeping { display: none; }
+  body.cow-night #cow-group { display: none; }
+  body.cow-night #cow-sleeping { display: inline; }
+  body.cow-night .cow-scene {
+    background: linear-gradient(to bottom,
+      #1a1f3a 0%, #2d3556 35%,
+      #4a5570 50%, #2a3340 100%);
+  }
+  /* Bucket interior darkens at night for atmosphere */
+  body.cow-night #bucket-group path[fill="#9a7d52"] { fill: #6a5638; }
+
+  /* Sleeping cow: visible breathing — inner body group expands and contracts */
+  @keyframes sleep-breathe {
+    0%, 100% { transform: scale(1, 1); }
+    50%      { transform: scale(1.04, 1.12); }
+  }
+  body.cow-night #cow-sleeping-inner {
+    animation: sleep-breathe 3s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+
+  /* Floating Zs drifting up and fading out, staggered */
+  @keyframes zzz-float {
+    0%   { opacity: 0; transform: translate(0, 0); }
+    20%  { opacity: 0.85; }
+    100% { opacity: 0; transform: translate(-15px, -40px); }
+  }
+  body.cow-night #zzz-1 { animation: zzz-float 4s ease-out infinite; }
+  body.cow-night #zzz-2 { animation: zzz-float 4s ease-out infinite 1.3s; }
+  body.cow-night #zzz-3 { animation: zzz-float 4s ease-out infinite 2.6s; }
+
+  /* Celebration scene — shown when timer finishes, until user taps Confirm */
+  .celebration-scene {
+    position: fixed;
+    inset: 0;
+    z-index: 8;  /* above the mini-controls (z-index 7) and stage (z-index 5) */
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .celebration-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  body.celebrating .celebration-scene {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  /* Hide other scenes' visible chrome while celebrating */
+  body.celebrating .mini-controls,
+  body.celebrating .mini-reopen,
+  body.celebrating .footer { opacity: 0; pointer-events: none; }
+
+  /* Card and other scenes stay hidden behind celebration even when finished */
+  body.celebrating .card {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* Confirm button — large, friendly, centered over the field */
+  .confirm-btn {
+    position: relative;
+    z-index: 1;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.4rem;
+    letter-spacing: 0.02em;
+    padding: 1rem 3rem;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .confirm-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.32);
+  }
+  .confirm-btn:active {
+    transform: translateY(-1px);
+  }
+
+  /* Flower bloom: each flower scales up from 0 with a slight rotation, staggered */
+  @keyframes celeb-bloom {
+    0%   { transform: scale(0) rotate(-12deg); opacity: 0; }
+    60%  { transform: scale(1.1) rotate(2deg);  opacity: 1; }
+    100% { transform: scale(1)   rotate(0deg);  opacity: 1; }
+  }
+  .celeb-flower {
+    transform-box: fill-box;
+    transform-origin: var(--pivot-x, 50%) var(--pivot-y, 100%);
+    opacity: 0;
+  }
+  body.celebrating .celeb-flower {
+    animation: celeb-bloom 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
   .bike-scene {
     position: fixed;
     inset: 0;
@@ -559,8 +683,8 @@
         <path d="M210,415 l2,-7 l2,7 z"/>
       </g>
 
-      <!-- Cow + bucket lifted up so the composition centers vertically -->
-      <g transform="translate(0, -90)">
+      <!-- Cow + bucket scaled 1.3x and shifted left, anchored to ground -->
+      <g transform="translate(-200, -72) scale(1.3)">
 
       <!-- Cow body — centered around x=400 -->
       <g id="cow-group">
@@ -603,10 +727,10 @@
         <path d="M300,320 Q320,315 340,325 Q345,340 332,348 Q312,348 300,335 Q295,325 300,320 Z" fill="#1a1118"/>
         <path d="M455,330 Q480,325 495,340 Q495,355 480,358 Q460,355 452,345 Q448,335 455,330 Z" fill="#1a1118"/>
 
-        <!-- Udder -->
-        <ellipse cx="395" cy="375" rx="20" ry="13" fill="#f5b8b8"/>
-        <ellipse cx="389" cy="382" rx="2.5" ry="4.5" fill="#e89090"/>
-        <ellipse cx="401" cy="382" rx="2.5" ry="4.5" fill="#e89090"/>
+        <!-- Udder — between back legs, toward the rear (left) of the body -->
+        <ellipse cx="355" cy="375" rx="20" ry="13" fill="#f5b8b8"/>
+        <ellipse cx="349" cy="382" rx="2.5" ry="4.5" fill="#e89090"/>
+        <ellipse cx="361" cy="382" rx="2.5" ry="4.5" fill="#e89090"/>
 
         <!-- Tail (back of cow, on the LEFT side since head faces right) -->
         <path d="M275,295 Q250,288 240,308 Q236,328 250,338 Q258,342 262,336" stroke="#1a1118" stroke-width="3.5" fill="none" stroke-linecap="round"/>
@@ -714,6 +838,91 @@
       <ellipse id="drip" cx="650" cy="345" rx="1.8" ry="2.5" fill="#5a8fb0" opacity="0"/>
 
       </g><!-- end of lift wrapper -->
+
+      <!-- Sleeping cow — shown only when body has .cow-night class.
+           Lies on the ground beside the bucket. No drinking animation.
+           Outer wrapper handles scale-and-shift to match standing cow position;
+           inner group gets the breathing animation. -->
+      <g id="cow-sleeping" transform="translate(-200, -72) scale(1.3)">
+        <g id="cow-sleeping-inner">
+        <!-- Body shadow on ground (wider, since cow is lying flat) -->
+        <ellipse cx="380" cy="438" rx="160" ry="8" fill="#1a1118" opacity="0.3"/>
+
+        <!-- Lying body — long horizontal shape, head tucked toward chest -->
+        <!-- Main barrel, lying on its side -->
+        <path d="M250,395 Q230,378 260,372 Q340,360 440,365 Q510,372 530,388 Q535,408 510,418 Q420,428 320,425 Q260,420 250,410 Q245,402 250,395 Z"
+              fill="#fafafa" stroke="#d8d0c0" stroke-width="1"/>
+
+        <!-- Belly highlight on bottom edge -->
+        <path d="M280,420 Q380,428 490,420 Q500,425 480,427 Q380,432 290,427 Q275,425 280,420 Z"
+              fill="#e8e0d0" opacity="0.5"/>
+
+        <!-- Black holstein patches on the lying body -->
+        <path d="M285,378 Q310,372 340,378 Q352,388 345,400 Q325,402 300,395 Q282,388 285,378 Z" fill="#1a1118"/>
+        <path d="M395,372 Q430,368 465,378 Q478,392 470,408 Q445,412 415,402 Q395,388 395,378 Q393,374 395,372 Z" fill="#1a1118"/>
+        <path d="M355,395 Q380,392 405,400 Q410,415 392,420 Q368,420 355,410 Q350,400 355,395 Z" fill="#1a1118"/>
+
+        <!-- Folded legs tucked under body — only the hooves peek out at front and back -->
+        <!-- Back legs folded -->
+        <ellipse cx="490" cy="420" rx="14" ry="6" fill="#fafafa"/>
+        <path d="M482,418 L498,418 L496,425 L484,425 Z" fill="#1a1118"/>
+        <ellipse cx="510" cy="422" rx="14" ry="6" fill="#fafafa"/>
+        <path d="M502,420 L518,420 L516,427 L504,427 Z" fill="#1a1118"/>
+
+        <!-- Front legs folded forward -->
+        <ellipse cx="265" cy="418" rx="14" ry="6" fill="#fafafa"/>
+        <path d="M257,416 L273,416 L271,423 L259,423 Z" fill="#1a1118"/>
+        <ellipse cx="245" cy="420" rx="13" ry="5" fill="#fafafa"/>
+        <path d="M238,419 L252,419 L250,425 L240,425 Z" fill="#1a1118"/>
+
+        <!-- Tail laying down behind -->
+        <path d="M538,400 Q558,398 568,408 Q572,420 564,425" stroke="#1a1118" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+        <!-- Head resting on the ground beside front legs.
+             Head lies on its side, eyes closed.
+             Group has slight breathing animation. -->
+        <g id="cow-sleeping-head">
+          <!-- Neck connecting body to resting head -->
+          <path d="M250,388 Q230,395 215,408 Q210,418 220,420 Q235,415 250,408 Q258,400 255,392 Z" fill="#fafafa"/>
+          <!-- Neck black patch -->
+          <path d="M225,402 Q235,398 245,402 Q248,408 240,412 Q228,412 222,408 Q220,404 225,402 Z" fill="#1a1118"/>
+
+          <!-- Head profile, lying on its side -->
+          <!-- Skull -->
+          <path d="M195,400 Q180,398 172,408 Q170,420 180,425 Q198,425 210,418 Q215,408 210,402 Z" fill="#fafafa"/>
+
+          <!-- Muzzle (lower jaw on the ground) -->
+          <ellipse cx="172" cy="420" rx="14" ry="7" fill="#e8c4a8"/>
+
+          <!-- Mouth line — slight smile (resting mouth) -->
+          <path d="M162,422 Q172,425 182,422" stroke="#8a6048" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+
+          <!-- Nostrils (looking from side, only one visible) -->
+          <ellipse cx="166" cy="416" rx="2" ry="2.5" fill="#3a2818"/>
+
+          <!-- Closed eye — curved line with eyelashes -->
+          <path d="M188,408 Q195,406 202,408" stroke="#1a1118" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M190,406 L189,403 M194,405 L194,402 M198,406 L199,403" stroke="#1a1118" stroke-width="0.8" stroke-linecap="round"/>
+
+          <!-- Black patch on head -->
+          <path d="M198,396 Q210,394 215,402 Q212,408 202,408 Q193,405 195,398 Q196,395 198,396 Z" fill="#1a1118"/>
+
+          <!-- Ear flopped against the ground -->
+          <path d="M212,400 Q222,396 228,402 Q224,410 216,410 Q212,406 212,400 Z" fill="#fafafa"/>
+          <path d="M218,402 Q224,400 224,406 Q220,408 218,406 Z" fill="#e8a4a4"/>
+
+          <!-- Horn (one visible from side angle) -->
+          <path d="M210,394 Q207,386 212,386 Q215,390 215,394 Z" fill="#d4c098" stroke="#a89070" stroke-width="0.5"/>
+        </g>
+
+        <!-- Floating Z letters drifting up to indicate sleep -->
+        <g id="sleep-zzz" font-family="Fraunces, serif" font-style="italic" font-weight="600" fill="#5a4a8a">
+          <text id="zzz-1" x="220" y="380" font-size="22" opacity="0">Z</text>
+          <text id="zzz-2" x="240" y="365" font-size="18" opacity="0">z</text>
+          <text id="zzz-3" x="260" y="350" font-size="14" opacity="0">z</text>
+        </g>
+        </g><!-- end cow-sleeping-inner -->
+      </g>
     </svg>
   </div>
 
@@ -746,56 +955,6 @@
         <path d="M450,417 l2,-9 l2,9 z"/>
       </g>
 
-      <!-- Flowers in the right corner with sway animation.
-           Each flower group has its own pivot at the base of the stem
-           so it sways like a stalk in the wind. -->
-      <g class="flower" id="flower-1" style="--pivot-x: 50%; --pivot-y: 100%;">
-        <!-- Stem -->
-        <path d="M660,425 Q662,400 660,375" stroke="#3a6028" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <!-- Leaf -->
-        <path d="M660,405 Q650,400 648,408 Q655,412 660,408 Z" fill="#4a7a35"/>
-        <!-- Petals (5) around center -->
-        <circle cx="654" cy="372" r="6" fill="#ffb3c1"/>
-        <circle cx="666" cy="372" r="6" fill="#ffb3c1"/>
-        <circle cx="660" cy="365" r="6" fill="#ffb3c1"/>
-        <circle cx="655" cy="380" r="6" fill="#ffb3c1"/>
-        <circle cx="665" cy="380" r="6" fill="#ffb3c1"/>
-        <!-- Center -->
-        <circle cx="660" cy="375" r="4" fill="#ffd700"/>
-      </g>
-
-      <g class="flower" id="flower-2" style="--pivot-x: 50%; --pivot-y: 100%;">
-        <path d="M700,425 Q702,395 700,365" stroke="#3a6028" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <path d="M700,400 Q712,393 714,402 Q706,408 700,403 Z" fill="#4a7a35"/>
-        <!-- Daisy: white petals + yellow center -->
-        <ellipse cx="690" cy="362" rx="5" ry="8" fill="#fafafa"/>
-        <ellipse cx="710" cy="362" rx="5" ry="8" fill="#fafafa"/>
-        <ellipse cx="700" cy="352" rx="5" ry="8" fill="#fafafa"/>
-        <ellipse cx="700" cy="372" rx="5" ry="8" fill="#fafafa"/>
-        <ellipse cx="693" cy="355" rx="5" ry="8" fill="#fafafa" transform="rotate(-30 693 355)"/>
-        <ellipse cx="707" cy="355" rx="5" ry="8" fill="#fafafa" transform="rotate(30 707 355)"/>
-        <ellipse cx="693" cy="370" rx="5" ry="8" fill="#fafafa" transform="rotate(30 693 370)"/>
-        <ellipse cx="707" cy="370" rx="5" ry="8" fill="#fafafa" transform="rotate(-30 707 370)"/>
-        <circle cx="700" cy="362" r="5" fill="#ffc107"/>
-      </g>
-
-      <g class="flower" id="flower-3" style="--pivot-x: 50%; --pivot-y: 100%;">
-        <path d="M740,425 Q738,400 740,378" stroke="#3a6028" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <path d="M740,408 Q728,402 726,412 Q734,418 740,412 Z" fill="#4a7a35"/>
-        <!-- Tulip-style: closed petal cluster -->
-        <path d="M732,378 Q740,365 748,378 Q748,388 740,388 Q732,388 732,378 Z" fill="#e8546c"/>
-        <path d="M736,378 Q740,370 744,378" stroke="#c0364d" stroke-width="0.8" fill="none"/>
-      </g>
-
-      <g class="flower" id="flower-4" style="--pivot-x: 50%; --pivot-y: 100%;">
-        <path d="M620,425 Q622,408 620,390" stroke="#3a6028" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <!-- Smaller wildflower -->
-        <circle cx="616" cy="388" r="3.5" fill="#9b6dd0"/>
-        <circle cx="624" cy="388" r="3.5" fill="#9b6dd0"/>
-        <circle cx="620" cy="383" r="3.5" fill="#9b6dd0"/>
-        <circle cx="620" cy="393" r="3.5" fill="#9b6dd0"/>
-        <circle cx="620" cy="388" r="2" fill="#ffd700"/>
-      </g>
 
       <!-- Girl + bicycle group, translated horizontally via JS -->
       <g id="bike-group">
@@ -878,33 +1037,391 @@
         <g transform="translate(-25, 0)">
           <!-- Torso (riding posture, slightly leaned forward) -->
           <path d="M20,330 Q15,310 25,290 Q40,285 50,290 Q55,310 50,325 Z" fill="#e8546c"/>
+          <!-- Torso shading (subtle highlight on shoulder) -->
+          <path d="M22,295 Q28,288 38,290 Q40,295 35,300 Q26,300 22,295 Z" fill="#f08090" opacity="0.5"/>
 
           <!-- Neck -->
-          <rect x="36" y="278" width="8" height="10" fill="#f0c4a0"/>
+          <path d="M37,278 Q41,278 45,280 L45,288 Q41,290 37,288 Z" fill="#f0c4a0"/>
+          <!-- Neck shadow under chin -->
+          <path d="M37,278 Q41,280 45,279 Q42,282 37,281 Z" fill="#c89878" opacity="0.6"/>
 
-          <!-- Head -->
-          <circle cx="42" cy="270" r="12" fill="#f0c4a0"/>
+          <!-- HEAD oval. cx=41, cy=270, rx=11, ry=13.
+               So head spans x∈[30,52], y∈[257,283].
+               Right edge at y=275 is at x≈51.2. -->
+          <ellipse cx="41" cy="270" rx="11" ry="13" fill="#f0c4a0"/>
 
-          <!-- Hair: long, flowing back behind her -->
-          <path d="M30,265 Q22,272 18,290 Q26,295 32,288 Q35,278 36,272 Z" fill="#8b4513"/>
-          <path d="M32,260 Q28,250 35,255 Q42,255 50,260 Q52,268 48,272 Q40,268 32,272 Z" fill="#8b4513"/>
-          <!-- Hair ponytail trailing in wind -->
-          <path d="M30,272 Q15,278 5,285 Q12,290 22,286 Q28,282 32,278 Z" fill="#8b4513"/>
+          <!-- Chin/jaw shading (sits well inside the lower head ellipse) -->
+          <ellipse cx="41" cy="280" rx="6" ry="2.5" fill="#d8a888" opacity="0.45"/>
 
-          <!-- Face details -->
-          <circle cx="46" cy="270" r="1" fill="#1a1118"/>
-          <path d="M44,275 Q46,277 48,275" stroke="#a04030" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+          <!-- Cheek blush (well inside the head, around x=44) -->
+          <ellipse cx="44" cy="274" rx="2.2" ry="1.3" fill="#f5a890" opacity="0.55"/>
 
-          <!-- Helmet -->
-          <path d="M30,265 Q42,253 54,265 Q54,260 50,257 Q42,252 34,257 Q30,260 30,265 Z" fill="#5a8fb0"/>
+          <!-- HAIR — visible portions, drawn BEFORE helmet so helmet covers
+               the crown but the bangs and side hair frame the face.
+               Drawn AFTER the head so hair sits ON the head (not behind). -->
+
+          <!-- Back of head hair (covers nape and back curve) -->
+          <path d="M30,262
+                   Q28,272 30,283
+                   Q34,284 36,281
+                   Q34,275 33,268
+                   Q33,263 30,262 Z"
+                fill="#6b3a10"/>
+
+          <!-- Bangs framing the forehead — overlap with the helmet brim so
+               there is no gap, and stop ABOVE the eyebrow (y=269).
+               Helmet bottom is at y=265; bangs span y=263 to y=268. -->
+          <path d="M33,264
+                   Q37,265 41,264
+                   Q45,264 49,265
+                   Q49,267 47,268
+                   Q41,266 35,268
+                   Q33,267 33,264 Z"
+                fill="#6b3a10"/>
+          <!-- Lighter wisps overlapping the bangs -->
+          <path d="M37,265 Q42,265 47,266 Q44,267.5 41,267 Q38,267 37,265 Z" fill="#7a4418"/>
+
+          <!-- Side hair / sideburn — between ear and cheek -->
+          <path d="M31,270 Q30,277 33,281 Q35,278 34,272 Z" fill="#6b3a10"/>
+
+          <!-- Ponytail trailing back behind her -->
+          <path d="M30,272 Q18,278 8,286 Q14,291 24,287 Q30,283 33,278 Z" fill="#6b3a10"/>
+          <path d="M28,277 Q15,283 6,290 Q11,293 19,289 Q26,285 30,281 Z" fill="#7a4418" opacity="0.85"/>
+
+          <!-- EYE at (44, 271), under the bangs at y=266-270.
+               Eye sits at y=271, well clear of bangs. -->
+          <ellipse cx="44" cy="271" rx="1.7" ry="1.2" fill="#fafafa"/>
+          <circle cx="44.3" cy="271" r="0.95" fill="#5a4028"/>
+          <circle cx="44.5" cy="270.7" r="0.35" fill="#fafafa"/>
+
+          <!-- Eyebrow above eye, just under the bangs -->
+          <path d="M42.5,269 Q44,268.3 46,269" stroke="#4a2810" stroke-width="1" fill="none" stroke-linecap="round"/>
+
+          <!-- NOSE — small triangular protrusion past the right edge of the head.
+               At y=275, head right edge is at x≈51.2.
+               Nose base on head at (50, 273), tip at (53, 275),
+               returning to head at (50, 277). -->
+          <path d="M50,273
+                   Q53,274 53,275
+                   Q53,276 50,276 Z"
+                fill="#f0c4a0" stroke="#d8a888" stroke-width="0.5"/>
+          <!-- Nostril hint -->
+          <ellipse cx="51" cy="275.5" rx="0.5" ry="0.4" fill="#a07050"/>
+
+          <!-- MOUTH — INSIDE the head ellipse.
+               At y=279, head right edge is at x≈48.9, so mouth must end before 48.5.
+               Centered at x=46, spanning x=44 to x=48. -->
+          <path d="M44,278.5 Q46,279.5 48,278.5"
+                stroke="#a02838" stroke-width="0.9"
+                fill="none" stroke-linecap="round"/>
+          <!-- Lower lip hint -->
+          <ellipse cx="46" cy="279.5" rx="1.5" ry="0.4" fill="#c0364d" opacity="0.6"/>
+
+          <!-- Ear (small, partially hidden by hair on side of head) -->
+          <ellipse cx="32.5" cy="272" rx="1.2" ry="1.8" fill="#f0c4a0"/>
+          <path d="M32.5,273 Q33,271 33.5,273" stroke="#c89878" stroke-width="0.4" fill="none"/>
+
+          <!-- HELMET — drawn LAST so it covers head/hair on top.
+               Solid filled shape from bottom-left, up over crown, down to bottom-right,
+               and back along the bottom edge to close. -->
+          <path d="M30,265
+                   Q28,253 36,250
+                   Q43,248 50,252
+                   Q53,256 52,265
+                   Q41,267 30,265 Z"
+                fill="#5a8fb0"/>
+          <!-- Helmet vent lines (style detail) -->
+          <line x1="36" y1="253" x2="38" y2="250" stroke="#3a6f8a" stroke-width="0.6" stroke-linecap="round"/>
+          <line x1="42" y1="251" x2="42" y2="248" stroke="#3a6f8a" stroke-width="0.6" stroke-linecap="round"/>
+          <line x1="47" y1="252" x2="48" y2="249" stroke="#3a6f8a" stroke-width="0.6" stroke-linecap="round"/>
+          <!-- Helmet highlight -->
+          <path d="M34,255 Q42,251 49,255 Q47,253 42,252 Q37,253 34,255 Z" fill="#8ab8d0" opacity="0.6"/>
+          <!-- Helmet strap (one visible side, going past ear to chin) -->
+          <path d="M33,265 Q35,274 40,279" stroke="#3a4a5a" stroke-width="0.7" fill="none" stroke-linecap="round"/>
         </g>
 
-        <!-- Arm reaches from shoulder (after shift, ~25, 295) forward to the handlebar (50, 295) -->
-        <line x1="25" y1="295" x2="48" y2="295" stroke="#e8546c" stroke-width="6" stroke-linecap="round"/>
-        <!-- Hand on grip -->
-        <circle cx="50" cy="295" r="3" fill="#f0c4a0"/>
+        <!-- ARMS — two segments each with elbow, reaching forward to handlebar.
+             After the (-25, 0) shift the shoulder is at (~25, 295).
+             The handlebar grip runs from x=40 to x=62 at y=305. -->
+        <!-- Far arm (slightly behind, dimmer) -->
+        <line x1="22" y1="296" x2="38" y2="300" stroke="#c84858" stroke-width="6" stroke-linecap="round"/>
+        <line x1="38" y1="300" x2="50" y2="305" stroke="#c84858" stroke-width="6" stroke-linecap="round"/>
+        <!-- Far hand wrapped on grip -->
+        <ellipse cx="50" cy="305" rx="3.5" ry="2.5" fill="#d8a888"/>
+
+        <!-- Near arm (in front) -->
+        <line x1="25" y1="295" x2="42" y2="299" stroke="#e8546c" stroke-width="6" stroke-linecap="round"/>
+        <line x1="42" y1="299" x2="58" y2="305" stroke="#e8546c" stroke-width="6" stroke-linecap="round"/>
+        <!-- Near hand wrapped on grip -->
+        <ellipse cx="58" cy="305" rx="3.5" ry="2.5" fill="#f0c4a0"/>
+        <!-- Knuckles hint -->
+        <line x1="56" y1="304" x2="56" y2="306" stroke="#c89878" stroke-width="0.5"/>
+        <line x1="58" y1="304" x2="58" y2="306" stroke="#c89878" stroke-width="0.5"/>
+        <line x1="60" y1="304" x2="60" y2="306" stroke="#c89878" stroke-width="0.5"/>
+      </g>
+
+      <!-- Flowers in the right corner with sway animation.
+           Each flower group has its own pivot at the base of the stem
+           so it sways like a stalk in the wind. -->
+      <g class="flower" id="flower-1" style="--pivot-x: 50%; --pivot-y: 100%;">
+        <!-- Stem -->
+        <path d="M660,425 Q662,400 660,375" stroke="#3a6028" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Leaf -->
+        <path d="M660,405 Q650,400 648,408 Q655,412 660,408 Z" fill="#4a7a35"/>
+        <!-- Petals (5) around center -->
+        <circle cx="654" cy="372" r="6" fill="#ffb3c1"/>
+        <circle cx="666" cy="372" r="6" fill="#ffb3c1"/>
+        <circle cx="660" cy="365" r="6" fill="#ffb3c1"/>
+        <circle cx="655" cy="380" r="6" fill="#ffb3c1"/>
+        <circle cx="665" cy="380" r="6" fill="#ffb3c1"/>
+        <!-- Center -->
+        <circle cx="660" cy="375" r="4" fill="#ffd700"/>
+      </g>
+
+      <g class="flower" id="flower-2" style="--pivot-x: 50%; --pivot-y: 100%;">
+        <path d="M700,425 Q702,395 700,365" stroke="#3a6028" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M700,400 Q712,393 714,402 Q706,408 700,403 Z" fill="#4a7a35"/>
+        <!-- Daisy: white petals + yellow center -->
+        <ellipse cx="690" cy="362" rx="5" ry="8" fill="#fafafa"/>
+        <ellipse cx="710" cy="362" rx="5" ry="8" fill="#fafafa"/>
+        <ellipse cx="700" cy="352" rx="5" ry="8" fill="#fafafa"/>
+        <ellipse cx="700" cy="372" rx="5" ry="8" fill="#fafafa"/>
+        <ellipse cx="693" cy="355" rx="5" ry="8" fill="#fafafa" transform="rotate(-30 693 355)"/>
+        <ellipse cx="707" cy="355" rx="5" ry="8" fill="#fafafa" transform="rotate(30 707 355)"/>
+        <ellipse cx="693" cy="370" rx="5" ry="8" fill="#fafafa" transform="rotate(30 693 370)"/>
+        <ellipse cx="707" cy="370" rx="5" ry="8" fill="#fafafa" transform="rotate(-30 707 370)"/>
+        <circle cx="700" cy="362" r="5" fill="#ffc107"/>
+      </g>
+
+      <g class="flower" id="flower-3" style="--pivot-x: 50%; --pivot-y: 100%;">
+        <path d="M740,425 Q738,400 740,378" stroke="#3a6028" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M740,408 Q728,402 726,412 Q734,418 740,412 Z" fill="#4a7a35"/>
+        <!-- Tulip-style: closed petal cluster -->
+        <path d="M732,378 Q740,365 748,378 Q748,388 740,388 Q732,388 732,378 Z" fill="#e8546c"/>
+        <path d="M736,378 Q740,370 744,378" stroke="#c0364d" stroke-width="0.8" fill="none"/>
+      </g>
+
+      <g class="flower" id="flower-4" style="--pivot-x: 50%; --pivot-y: 100%;">
+        <path d="M620,425 Q622,408 620,390" stroke="#3a6028" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Smaller wildflower -->
+        <circle cx="616" cy="388" r="3.5" fill="#9b6dd0"/>
+        <circle cx="624" cy="388" r="3.5" fill="#9b6dd0"/>
+        <circle cx="620" cy="383" r="3.5" fill="#9b6dd0"/>
+        <circle cx="620" cy="393" r="3.5" fill="#9b6dd0"/>
+        <circle cx="620" cy="388" r="2" fill="#ffd700"/>
       </g>
     </svg>
+  </div>
+
+  <!-- Celebration scene — shown when timer finishes, hides until user confirms -->
+  <div class="celebration-scene" id="celebration-scene">
+    <svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" class="celebration-svg" aria-hidden="true">
+      <!-- Sky gradient: warm dawn-meadow tones -->
+      <rect x="0" y="0" width="800" height="500" fill="url(#celeb-sky)"/>
+      <defs>
+        <linearGradient id="celeb-sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f4d796"/>
+          <stop offset="40%" stop-color="#f8e5b3"/>
+          <stop offset="60%" stop-color="#a8d68a"/>
+          <stop offset="100%" stop-color="#5a8a3a"/>
+        </linearGradient>
+        <radialGradient id="celeb-sun" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fff4cc"/>
+          <stop offset="60%" stop-color="#ffd76b"/>
+          <stop offset="100%" stop-color="#ffb347" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Soft sun glow at top -->
+      <circle cx="600" cy="120" r="120" fill="url(#celeb-sun)" opacity="0.85"/>
+      <circle cx="600" cy="120" r="55" fill="#fff4cc"/>
+
+      <!-- Distant rolling hills -->
+      <path d="M0,260 Q150,230 300,250 T600,245 T800,260 L800,320 L0,320 Z" fill="#7a9a5f" opacity="0.6"/>
+      <path d="M0,290 Q200,270 400,283 T800,287 L800,330 L0,330 Z" fill="#6b8e4e" opacity="0.85"/>
+
+      <!-- Main green field -->
+      <rect x="0" y="295" width="800" height="205" fill="#5a8a3a"/>
+      <path d="M0,310 Q200,300 400,308 T800,312 L800,500 L0,500 Z" fill="#4a7a2e" opacity="0.7"/>
+
+      <!-- Grass tufts scattered -->
+      <g fill="#3a6028" opacity="0.85">
+        <path d="M30,330 l2,-9 l2,9 z"/>
+        <path d="M85,335 l2,-8 l2,8 z"/>
+        <path d="M155,328 l2,-10 l2,10 z"/>
+        <path d="M220,338 l2,-9 l2,9 z"/>
+        <path d="M310,332 l2,-8 l2,8 z"/>
+        <path d="M390,340 l2,-10 l2,10 z"/>
+        <path d="M475,330 l2,-9 l2,9 z"/>
+        <path d="M555,338 l2,-8 l2,8 z"/>
+        <path d="M640,332 l2,-10 l2,10 z"/>
+        <path d="M715,340 l2,-9 l2,9 z"/>
+        <path d="M770,334 l2,-8 l2,8 z"/>
+      </g>
+
+      <!-- A LOT of flowers scattered across the field.
+           Each flower is a simple stem + petal cluster.
+           Flowers are placed in three rough bands (back, mid, front)
+           with slight size variation for depth. -->
+
+      <!-- BACK row (smaller, distant) -->
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0s;">
+        <path d="M60,335 Q61,322 60,310" stroke="#3a6028" stroke-width="1.5" fill="none"/>
+        <circle cx="56" cy="308" r="3.5" fill="#ffb3c1"/><circle cx="64" cy="308" r="3.5" fill="#ffb3c1"/>
+        <circle cx="60" cy="304" r="3.5" fill="#ffb3c1"/><circle cx="60" cy="312" r="3.5" fill="#ffb3c1"/>
+        <circle cx="60" cy="308" r="2" fill="#ffd700"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.4s;">
+        <path d="M125,338 Q126,325 125,313" stroke="#3a6028" stroke-width="1.5" fill="none"/>
+        <ellipse cx="120" cy="310" rx="3" ry="5" fill="#fafafa"/><ellipse cx="130" cy="310" rx="3" ry="5" fill="#fafafa"/>
+        <ellipse cx="125" cy="305" rx="3" ry="5" fill="#fafafa"/><ellipse cx="125" cy="315" rx="3" ry="5" fill="#fafafa"/>
+        <circle cx="125" cy="310" r="3" fill="#ffc107"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.8s;">
+        <path d="M195,336 Q196,323 195,311" stroke="#3a6028" stroke-width="1.5" fill="none"/>
+        <path d="M188,309 Q195,300 202,309 Q202,316 195,316 Q188,316 188,309 Z" fill="#e8546c"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.2s;">
+        <path d="M270,340 Q271,327 270,315" stroke="#3a6028" stroke-width="1.5" fill="none"/>
+        <circle cx="266" cy="313" r="3.5" fill="#9b6dd0"/><circle cx="274" cy="313" r="3.5" fill="#9b6dd0"/>
+        <circle cx="270" cy="309" r="3.5" fill="#9b6dd0"/><circle cx="270" cy="317" r="3.5" fill="#9b6dd0"/>
+        <circle cx="270" cy="313" r="2" fill="#ffd700"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.6s;">
+        <path d="M350,338 Q351,325 350,313" stroke="#3a6028" stroke-width="1.5" fill="none"/>
+        <circle cx="346" cy="311" r="3.5" fill="#ffb3c1"/><circle cx="354" cy="311" r="3.5" fill="#ffb3c1"/>
+        <circle cx="350" cy="307" r="3.5" fill="#ffb3c1"/><circle cx="350" cy="315" r="3.5" fill="#ffb3c1"/>
+        <circle cx="350" cy="311" r="2" fill="#ffd700"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 1.0s;">
+        <path d="M430,340 Q431,327 430,315" stroke="#3a6028" stroke-width="1.5" fill="none"/>
+        <ellipse cx="425" cy="312" rx="3" ry="5" fill="#fafafa"/><ellipse cx="435" cy="312" rx="3" ry="5" fill="#fafafa"/>
+        <ellipse cx="430" cy="307" rx="3" ry="5" fill="#fafafa"/><ellipse cx="430" cy="317" rx="3" ry="5" fill="#fafafa"/>
+        <circle cx="430" cy="312" r="3" fill="#ffc107"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.3s;">
+        <path d="M510,336 Q511,323 510,311" stroke="#3a6028" stroke-width="1.5" fill="none"/>
+        <path d="M503,309 Q510,300 517,309 Q517,316 510,316 Q503,316 503,309 Z" fill="#e8546c"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.7s;">
+        <path d="M595,340 Q596,327 595,315" stroke="#3a6028" stroke-width="1.5" fill="none"/>
+        <circle cx="591" cy="313" r="3.5" fill="#9b6dd0"/><circle cx="599" cy="313" r="3.5" fill="#9b6dd0"/>
+        <circle cx="595" cy="309" r="3.5" fill="#9b6dd0"/><circle cx="595" cy="317" r="3.5" fill="#9b6dd0"/>
+        <circle cx="595" cy="313" r="2" fill="#ffd700"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.5s;">
+        <path d="M680,338 Q681,325 680,313" stroke="#3a6028" stroke-width="1.5" fill="none"/>
+        <circle cx="676" cy="311" r="3.5" fill="#ffb3c1"/><circle cx="684" cy="311" r="3.5" fill="#ffb3c1"/>
+        <circle cx="680" cy="307" r="3.5" fill="#ffb3c1"/><circle cx="680" cy="315" r="3.5" fill="#ffb3c1"/>
+        <circle cx="680" cy="311" r="2" fill="#ffd700"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.9s;">
+        <path d="M750,340 Q751,327 750,315" stroke="#3a6028" stroke-width="1.5" fill="none"/>
+        <ellipse cx="745" cy="312" rx="3" ry="5" fill="#fafafa"/><ellipse cx="755" cy="312" rx="3" ry="5" fill="#fafafa"/>
+        <ellipse cx="750" cy="307" rx="3" ry="5" fill="#fafafa"/><ellipse cx="750" cy="317" rx="3" ry="5" fill="#fafafa"/>
+        <circle cx="750" cy="312" r="3" fill="#ffc107"/>
+      </g>
+
+      <!-- MID row (medium size) -->
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.15s;">
+        <path d="M40,395 Q42,375 40,355" stroke="#3a6028" stroke-width="2" fill="none"/>
+        <circle cx="34" cy="352" r="5" fill="#ffb3c1"/><circle cx="46" cy="352" r="5" fill="#ffb3c1"/>
+        <circle cx="40" cy="346" r="5" fill="#ffb3c1"/><circle cx="40" cy="358" r="5" fill="#ffb3c1"/>
+        <circle cx="40" cy="352" r="3" fill="#ffd700"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.55s;">
+        <path d="M105,400 Q107,378 105,358" stroke="#3a6028" stroke-width="2" fill="none"/>
+        <ellipse cx="98" cy="354" rx="4" ry="7" fill="#fafafa"/><ellipse cx="112" cy="354" rx="4" ry="7" fill="#fafafa"/>
+        <ellipse cx="105" cy="348" rx="4" ry="7" fill="#fafafa"/><ellipse cx="105" cy="360" rx="4" ry="7" fill="#fafafa"/>
+        <circle cx="105" cy="354" r="4" fill="#ffc107"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 1.1s;">
+        <path d="M180,398 Q182,378 180,358" stroke="#3a6028" stroke-width="2" fill="none"/>
+        <path d="M170,355 Q180,343 190,355 Q190,365 180,365 Q170,365 170,355 Z" fill="#e8546c"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.35s;">
+        <path d="M260,400 Q262,378 260,358" stroke="#3a6028" stroke-width="2" fill="none"/>
+        <circle cx="254" cy="355" r="5" fill="#9b6dd0"/><circle cx="266" cy="355" r="5" fill="#9b6dd0"/>
+        <circle cx="260" cy="349" r="5" fill="#9b6dd0"/><circle cx="260" cy="361" r="5" fill="#9b6dd0"/>
+        <circle cx="260" cy="355" r="3" fill="#ffd700"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.75s;">
+        <path d="M340,395 Q342,375 340,355" stroke="#3a6028" stroke-width="2" fill="none"/>
+        <circle cx="334" cy="352" r="5" fill="#ffb3c1"/><circle cx="346" cy="352" r="5" fill="#ffb3c1"/>
+        <circle cx="340" cy="346" r="5" fill="#ffb3c1"/><circle cx="340" cy="358" r="5" fill="#ffb3c1"/>
+        <circle cx="340" cy="352" r="3" fill="#ffd700"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.25s;">
+        <path d="M420,400 Q422,378 420,358" stroke="#3a6028" stroke-width="2" fill="none"/>
+        <ellipse cx="413" cy="354" rx="4" ry="7" fill="#fafafa"/><ellipse cx="427" cy="354" rx="4" ry="7" fill="#fafafa"/>
+        <ellipse cx="420" cy="348" rx="4" ry="7" fill="#fafafa"/><ellipse cx="420" cy="360" rx="4" ry="7" fill="#fafafa"/>
+        <circle cx="420" cy="354" r="4" fill="#ffc107"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.85s;">
+        <path d="M495,398 Q497,378 495,358" stroke="#3a6028" stroke-width="2" fill="none"/>
+        <path d="M485,355 Q495,343 505,355 Q505,365 495,365 Q485,365 485,355 Z" fill="#e8546c"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.45s;">
+        <path d="M580,400 Q582,378 580,358" stroke="#3a6028" stroke-width="2" fill="none"/>
+        <circle cx="574" cy="355" r="5" fill="#9b6dd0"/><circle cx="586" cy="355" r="5" fill="#9b6dd0"/>
+        <circle cx="580" cy="349" r="5" fill="#9b6dd0"/><circle cx="580" cy="361" r="5" fill="#9b6dd0"/>
+        <circle cx="580" cy="355" r="3" fill="#ffd700"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.65s;">
+        <path d="M665,395 Q667,375 665,355" stroke="#3a6028" stroke-width="2" fill="none"/>
+        <circle cx="659" cy="352" r="5" fill="#ffb3c1"/><circle cx="671" cy="352" r="5" fill="#ffb3c1"/>
+        <circle cx="665" cy="346" r="5" fill="#ffb3c1"/><circle cx="665" cy="358" r="5" fill="#ffb3c1"/>
+        <circle cx="665" cy="352" r="3" fill="#ffd700"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 1.05s;">
+        <path d="M740,400 Q742,378 740,358" stroke="#3a6028" stroke-width="2" fill="none"/>
+        <ellipse cx="733" cy="354" rx="4" ry="7" fill="#fafafa"/><ellipse cx="747" cy="354" rx="4" ry="7" fill="#fafafa"/>
+        <ellipse cx="740" cy="348" rx="4" ry="7" fill="#fafafa"/><ellipse cx="740" cy="360" rx="4" ry="7" fill="#fafafa"/>
+        <circle cx="740" cy="354" r="4" fill="#ffc107"/>
+      </g>
+
+      <!-- FRONT row (largest, closest) -->
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.5s;">
+        <path d="M70,470 Q73,440 70,410" stroke="#3a6028" stroke-width="2.5" fill="none"/>
+        <circle cx="62" cy="406" r="7" fill="#ffb3c1"/><circle cx="78" cy="406" r="7" fill="#ffb3c1"/>
+        <circle cx="70" cy="398" r="7" fill="#ffb3c1"/><circle cx="70" cy="414" r="7" fill="#ffb3c1"/>
+        <circle cx="70" cy="406" r="4" fill="#ffd700"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.1s;">
+        <path d="M180,475 Q183,445 180,415" stroke="#3a6028" stroke-width="2.5" fill="none"/>
+        <ellipse cx="170" cy="411" rx="5" ry="9" fill="#fafafa"/><ellipse cx="190" cy="411" rx="5" ry="9" fill="#fafafa"/>
+        <ellipse cx="180" cy="403" rx="5" ry="9" fill="#fafafa"/><ellipse cx="180" cy="419" rx="5" ry="9" fill="#fafafa"/>
+        <circle cx="180" cy="411" r="5" fill="#ffc107"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.95s;">
+        <path d="M280,470 Q283,440 280,410" stroke="#3a6028" stroke-width="2.5" fill="none"/>
+        <path d="M268,406 Q280,388 292,406 Q292,418 280,418 Q268,418 268,406 Z" fill="#e8546c"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.4s;">
+        <path d="M380,475 Q383,445 380,415" stroke="#3a6028" stroke-width="2.5" fill="none"/>
+        <circle cx="372" cy="411" r="7" fill="#9b6dd0"/><circle cx="388" cy="411" r="7" fill="#9b6dd0"/>
+        <circle cx="380" cy="403" r="7" fill="#9b6dd0"/><circle cx="380" cy="419" r="7" fill="#9b6dd0"/>
+        <circle cx="380" cy="411" r="4" fill="#ffd700"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.7s;">
+        <path d="M490,470 Q493,440 490,410" stroke="#3a6028" stroke-width="2.5" fill="none"/>
+        <circle cx="482" cy="406" r="7" fill="#ffb3c1"/><circle cx="498" cy="406" r="7" fill="#ffb3c1"/>
+        <circle cx="490" cy="398" r="7" fill="#ffb3c1"/><circle cx="490" cy="414" r="7" fill="#ffb3c1"/>
+        <circle cx="490" cy="406" r="4" fill="#ffd700"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.2s;">
+        <path d="M600,475 Q603,445 600,415" stroke="#3a6028" stroke-width="2.5" fill="none"/>
+        <ellipse cx="590" cy="411" rx="5" ry="9" fill="#fafafa"/><ellipse cx="610" cy="411" rx="5" ry="9" fill="#fafafa"/>
+        <ellipse cx="600" cy="403" rx="5" ry="9" fill="#fafafa"/><ellipse cx="600" cy="419" rx="5" ry="9" fill="#fafafa"/>
+        <circle cx="600" cy="411" r="5" fill="#ffc107"/>
+      </g>
+      <g class="celeb-flower" style="--pivot-x:50%;--pivot-y:100%; animation-delay: 0.85s;">
+        <path d="M710,470 Q713,440 710,410" stroke="#3a6028" stroke-width="2.5" fill="none"/>
+        <path d="M698,406 Q710,388 722,406 Q722,418 710,418 Q698,418 698,406 Z" fill="#e8546c"/>
+      </g>
+    </svg>
+
+    <button class="confirm-btn" id="btn-confirm">Done</button>
   </div>
 
   <div class="stage" id="stage">
@@ -993,6 +1510,7 @@
   const waterRect = $('water-rect'), waterSurface = $('water-surface');
   const waterLine1 = $('water-line-1'), waterLine2 = $('water-line-2');
   const bikeGroup = $('bike-group');
+  const btnConfirm = $('btn-confirm');
 
   // Bike pedaling parts
   const crankArmFront = $('crank-arm-front'), crankArmBack = $('crank-arm-back');
@@ -1075,7 +1593,34 @@
     stars.style.setProperty('--star-opacity', starOp);
   };
 
-  // ---- Cow scene: water level decreases linearly with progress ----
+  // ---- CET time detection for cow night/day mode ----
+  // Sleeping cow shows from 21:00 to 07:00 Central European Time (Europe/Berlin
+  // handles CET/CEST DST transitions automatically).
+  const isCowNight = () => {
+    try {
+      const hourStr = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Europe/Berlin',
+        hour: 'numeric',
+        hour12: false,
+      }).format(new Date());
+      const hour = parseInt(hourStr, 10);
+      // Hour can be "24" in some implementations for midnight; treat as 0.
+      const h = hour === 24 ? 0 : hour;
+      return h >= 21 || h < 7;
+    } catch (e) {
+      // If Intl unavailable, fall back to local time
+      const h = new Date().getHours();
+      return h >= 21 || h < 7;
+    }
+  };
+
+  const updateCowDayNight = () => {
+    document.body.classList.toggle('cow-night', isCowNight());
+  };
+
+  // Check every minute so the scene swaps if the user crosses 9 PM or 7 AM CET
+  // while the page is open.
+  setInterval(updateCowDayNight, 60 * 1000);
   // Bucket interior: top at y=382, bottom at y=436 (54px tall water column)
   const updateCow = (progress) => {
     const p = Math.min(1, Math.max(0, progress));
@@ -1100,13 +1645,14 @@
   };
 
   // ---- Bike scene: girl + bicycle translates linearly across the viewBox ----
-  // Bike is fully visible at start and end. Local extents run x≈-55 to x≈75.
-  // Start at translate=60 (back wheel just inside left edge); end at 540
-  // (front wheel just before the flower cluster around x≈620).
+  // Bike is fully visible at start. At end, the front wheel's leading edge
+  // touches the right border of the viewBox (x=800).
+  // Front wheel center is at local x=50 with radius 28, so its leading edge
+  // is at local x=78. Therefore translate end = 800 - 78 = 722.
   const updateBike = (progress) => {
     const p = Math.min(1, Math.max(0, progress));
     const startX = 60;
-    const endX = 540;
+    const endX = 722;
     const x = startX + (endX - startX) * p;
     bikeGroup.setAttribute('transform', `translate(${x}, 0)`);
   };
@@ -1298,12 +1844,13 @@
     state.endsAt = null;
     state.status = 'idle';
     stage.classList.remove('running', 'finished');
-    document.body.classList.remove('running', 'finished', 'controls-hidden');
+    document.body.classList.remove('running', 'finished', 'controls-hidden', 'celebrating');
     btnStart.textContent = 'Begin';
     btnStart.disabled = false;
     renderDisplay(readInputs());
     updateScene(0);
     stopPedaling();
+    stopChime();
     // Reset pedal pose to starting position (front pedal down, back up)
     updatePedalPose(Math.PI / 2);
   };
@@ -1315,11 +1862,23 @@
     stage.classList.add('finished');
     document.body.classList.remove('running', 'controls-hidden');
     document.body.classList.add('finished');
+    // Show celebration scene; settings card stays hidden until user confirms
+    document.body.classList.add('celebrating');
     btnStart.disabled = false;
     btnStart.textContent = 'Begin';
     stopPedaling();
-    // Gentle audio chime via Web Audio
-    chime();
+    // Repeating alarm chime — keeps playing until user clicks Done
+    startChime();
+  };
+
+  // Confirm button on celebration scene → return to idle settings
+  const confirmCelebration = () => {
+    // Stop the alarm immediately on tap
+    stopChime();
+    // Clear celebrating state, then transition to idle (so settings card shows)
+    document.body.classList.remove('celebrating');
+    // Use reset to clean up timer state so user can start fresh
+    reset();
   };
 
   const flashInputs = () => {
@@ -1338,10 +1897,16 @@
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     } catch (e) { /* audio unsupported — silent */ }
   };
-  const chime = () => {
+
+  // Track active oscillators and the loop interval so we can stop on demand.
+  let chimeInterval = null;
+  let activeOscillators = [];
+
+  // Play a single 3-note arpeggio. Returns the oscillators so they can be
+  // stopped early if the user dismisses before the notes finish.
+  const playOneChime = () => {
     if (!audioCtx) return;
     try {
-      // Resume in case the context was suspended (autoplay policy)
       if (audioCtx.state === 'suspended') audioCtx.resume();
       const ctx = audioCtx;
       [523.25, 659.25, 783.99].forEach((freq, i) => {
@@ -1357,8 +1922,34 @@
         gain.gain.exponentialRampToValueAtTime(0.001, t0 + 1.2);
         osc.start(t0);
         osc.stop(t0 + 1.3);
+        activeOscillators.push(osc);
+        // Clean up the reference after the note finishes naturally
+        osc.onended = () => {
+          const idx = activeOscillators.indexOf(osc);
+          if (idx !== -1) activeOscillators.splice(idx, 1);
+        };
       });
     } catch (e) { /* silent */ }
+  };
+
+  // Start a repeating chime that keeps playing until stopChime() is called.
+  // The first note plays immediately; subsequent arpeggios repeat every 1.6s.
+  const startChime = () => {
+    if (chimeInterval !== null) return; // already playing
+    playOneChime();
+    chimeInterval = setInterval(playOneChime, 1600);
+  };
+
+  const stopChime = () => {
+    if (chimeInterval !== null) {
+      clearInterval(chimeInterval);
+      chimeInterval = null;
+    }
+    // Silence any oscillators currently in flight
+    activeOscillators.forEach((osc) => {
+      try { osc.stop(); } catch (e) { /* already stopped */ }
+    });
+    activeOscillators = [];
   };
 
   // ---- Wire up ----
@@ -1376,6 +1967,7 @@
   miniReopen.addEventListener('click', () => {
     document.body.classList.remove('controls-hidden');
   });
+  btnConfirm.addEventListener('click', confirmCelebration);
 
   // Scene selector
   sceneSelect.addEventListener('change', (e) => {
@@ -1404,6 +1996,7 @@
   updateCow(0);
   updateBike(0);
   updatePedalPose(Math.PI / 2); // front pedal at bottom, back at top
+  updateCowDayNight();           // sleeping cow if it's currently night CET
 })();
 </script>
 </body>
