@@ -1421,13 +1421,13 @@
       </g>
     </svg>
 
-    <button class="confirm-btn" id="btn-confirm">Done</button>
+    <button class="confirm-btn" id="btn-confirm" data-i18n="done">Done</button>
   </div>
 
   <div class="stage" id="stage">
     <div class="card">
-      <div class="eyebrow">Sundial &mdash; A Timer</div>
-      <h1 class="title">Mark the hours</h1>
+      <div class="eyebrow" data-i18n="eyebrow">Sundial &mdash; A Timer</div>
+      <h1 class="title" data-i18n="title">Mark the hours</h1>
 
       <div class="display" id="display">
         <span id="hh">00</span><span class="sep">:</span><span id="mm">01</span><span class="sep">:</span><span id="ss">00</span>
@@ -1436,53 +1436,61 @@
       <div class="inputs">
         <div class="field">
           <input type="number" id="in-h" min="0" max="23" value="0" inputmode="numeric" pattern="[0-9]*" />
-          <label>Hours</label>
+          <label data-i18n="hours">Hours</label>
         </div>
         <span class="colon">:</span>
         <div class="field">
           <input type="number" id="in-m" min="0" max="59" value="1" inputmode="numeric" pattern="[0-9]*" />
-          <label>Minutes</label>
+          <label data-i18n="minutes">Minutes</label>
         </div>
         <span class="colon">:</span>
         <div class="field">
           <input type="number" id="in-s" min="0" max="59" value="0" inputmode="numeric" pattern="[0-9]*" />
-          <label>Seconds</label>
+          <label data-i18n="seconds">Seconds</label>
         </div>
       </div>
 
       <div class="scene-select">
-        <label for="scene">Scene</label>
+        <label for="scene" data-i18n="scene">Scene</label>
         <select id="scene">
-          <option value="sun">Sun crossing the sky</option>
-          <option value="cow">Cow drinking water</option>
-          <option value="bike">Girl riding a bicycle</option>
+          <option value="sun" data-i18n="scene_sun">Sun crossing the sky</option>
+          <option value="cow" data-i18n="scene_cow">Cow drinking water</option>
+          <option value="bike" data-i18n="scene_bike">Girl riding a bicycle</option>
+        </select>
+      </div>
+
+      <div class="scene-select">
+        <label for="lang" data-i18n="language">Language</label>
+        <select id="lang">
+          <option value="en">English</option>
+          <option value="uk">Українська</option>
         </select>
       </div>
 
       <div class="controls">
-        <button class="primary" id="btn-start">Begin</button>
+        <button class="primary" id="btn-start" data-i18n="begin">Begin</button>
       </div>
     </div>
   </div>
 
   <div class="mini-controls" id="mini">
-    <button id="mini-pause" title="Pause">
+    <button id="mini-pause" title="Pause" data-i18n-title="pause">
       <svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
     </button>
     <div class="mini-time" id="mini-time">00:00:00</div>
-    <button id="mini-reset" title="Reset">
+    <button id="mini-reset" title="Reset" data-i18n-title="reset">
       <svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
     </button>
-    <button id="mini-close" title="Hide controls">
+    <button id="mini-close" title="Hide controls" data-i18n-title="hide_controls">
       <svg viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
     </button>
   </div>
 
-  <button class="mini-reopen" id="mini-reopen" title="Show controls">
+  <button class="mini-reopen" id="mini-reopen" title="Show controls" data-i18n-title="show_controls">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
   </button>
 
-  <div class="footer">East &mdash; West</div>
+  <div class="footer" data-i18n="footer">East &mdash; West</div>
 
 <script>
 (() => {
@@ -1507,6 +1515,7 @@
   const miniPause = $('mini-pause'), miniReset = $('mini-reset'), miniTime = $('mini-time');
   const miniClose = $('mini-close'), miniReopen = $('mini-reopen');
   const sceneSelect = $('scene');
+  const langSelect = $('lang');
   const waterRect = $('water-rect'), waterSurface = $('water-surface');
   const waterLine1 = $('water-line-1'), waterLine2 = $('water-line-2');
   const bikeGroup = $('bike-group');
@@ -1522,6 +1531,105 @@
 
   // Active scene: 'sun' | 'cow' | 'bike'
   let activeScene = 'sun';
+
+  // ---- Internationalization ----
+  // Translation strings for each supported language. Keys are referenced
+  // via data-i18n / data-i18n-title attributes in the markup.
+  const translations = {
+    en: {
+      eyebrow: 'Sundial — A Timer',
+      title: 'Mark the hours',
+      hours: 'Hours',
+      minutes: 'Minutes',
+      seconds: 'Seconds',
+      scene: 'Scene',
+      scene_sun: 'Sun crossing the sky',
+      scene_cow: 'Cow drinking water',
+      scene_bike: 'Girl riding a bicycle',
+      language: 'Language',
+      begin: 'Begin',
+      resume: 'Resume',
+      pause: 'Pause',
+      reset: 'Reset',
+      hide_controls: 'Hide controls',
+      show_controls: 'Show controls',
+      done: 'Done',
+      footer: 'East — West',
+    },
+    uk: {
+      eyebrow: 'Sundial — Таймер',
+      title: 'Відлічуйте години',
+      hours: 'Години',
+      minutes: 'Хвилини',
+      seconds: 'Секунди',
+      scene: 'Сцена',
+      scene_sun: 'Сонце над небосхилом',
+      scene_cow: 'Корова п\u2019є воду',
+      scene_bike: 'Дівчина на велосипеді',
+      language: 'Мова',
+      begin: 'Почати',
+      resume: 'Продовжити',
+      pause: 'Пауза',
+      reset: 'Скинути',
+      hide_controls: 'Приховати кнопки',
+      show_controls: 'Показати кнопки',
+      done: 'Готово',
+      footer: 'Схід — Захід',
+    },
+  };
+
+  let currentLang = 'en';
+
+  // Detect the user's preferred language. Priority:
+  //   1. Manual override saved in localStorage
+  //   2. navigator.language starting with 'uk'
+  //   3. Timezone Europe/Kyiv (or older Europe/Kiev)
+  //   4. Fall back to English
+  const detectLanguage = () => {
+    try {
+      const saved = localStorage.getItem('sundial-lang');
+      if (saved && translations[saved]) return saved;
+    } catch (e) { /* localStorage may be blocked */ }
+
+    // Browser language preference
+    const navLang = (navigator.language || navigator.userLanguage || '').toLowerCase();
+    if (navLang.startsWith('uk')) return 'uk';
+
+    // Timezone heuristic — Ukrainian users often have Europe/Kyiv
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (tz === 'Europe/Kyiv' || tz === 'Europe/Kiev') return 'uk';
+    } catch (e) { /* Intl unavailable */ }
+
+    return 'en';
+  };
+
+  // Apply the given language: walk all elements with data-i18n / data-i18n-title
+  // and update their text content / title attributes from the translations table.
+  const applyLanguage = (lang) => {
+    if (!translations[lang]) lang = 'en';
+    currentLang = lang;
+    const dict = translations[lang];
+
+    // Set the document language attribute for accessibility
+    document.documentElement.setAttribute('lang', lang);
+
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.getAttribute('data-i18n');
+      if (dict[key] !== undefined) el.textContent = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-title');
+      if (dict[key] !== undefined) el.setAttribute('title', dict[key]);
+    });
+
+    // Sync the language dropdown to reflect the current choice
+    if (langSelect.value !== lang) langSelect.value = lang;
+  };
+
+  // Helper to look up the current translation for runtime-set strings
+  // (e.g., the Begin/Resume button label which changes based on timer state).
+  const t = (key) => (translations[currentLang] && translations[currentLang][key]) || key;
 
   // Pedal animation state
   let pedalRafId = null;
@@ -1816,10 +1924,10 @@
     stage.classList.remove('finished');
     document.body.classList.add('running');
     document.body.classList.remove('finished');
-    btnStart.textContent = 'Begin';
+    btnStart.textContent = t('begin');
     btnStart.disabled = true;
     miniPause.innerHTML = ICON_PAUSE;
-    miniPause.title = 'Pause';
+    miniPause.title = t('pause');
     sun.classList.remove('hidden');
     if (activeScene === 'bike') startPedaling();
     state.rafId = requestAnimationFrame(tick);
@@ -1830,10 +1938,10 @@
     cancelAnimationFrame(state.rafId);
     state.remainingMs = state.endsAt - Date.now();
     state.status = 'paused';
-    btnStart.textContent = 'Resume';
+    btnStart.textContent = t('resume');
     btnStart.disabled = false;
     miniPause.innerHTML = ICON_PLAY;
-    miniPause.title = 'Resume';
+    miniPause.title = t('resume');
     stopPedaling();
   };
 
@@ -1845,7 +1953,7 @@
     state.status = 'idle';
     stage.classList.remove('running', 'finished');
     document.body.classList.remove('running', 'finished', 'controls-hidden', 'celebrating');
-    btnStart.textContent = 'Begin';
+    btnStart.textContent = t('begin');
     btnStart.disabled = false;
     renderDisplay(readInputs());
     updateScene(0);
@@ -1865,7 +1973,7 @@
     // Show celebration scene; settings card stays hidden until user confirms
     document.body.classList.add('celebrating');
     btnStart.disabled = false;
-    btnStart.textContent = 'Begin';
+    btnStart.textContent = t('begin');
     stopPedaling();
     // Repeating alarm chime — keeps playing until user clicks Done
     startChime();
@@ -1984,6 +2092,13 @@
     updateScene(state.status === 'idle' || state.status === 'finished' ? 0 : 1 - (state.remainingMs / state.totalMs));
   });
 
+  // Language selector — manual override is persisted to localStorage
+  langSelect.addEventListener('change', (e) => {
+    const lang = e.target.value;
+    try { localStorage.setItem('sundial-lang', lang); } catch (err) { /* ignore */ }
+    applyLanguage(lang);
+  });
+
   [inH, inM, inS].forEach(el => {
     el.addEventListener('input', () => {
       if (state.status === 'idle') renderDisplay(readInputs());
@@ -1991,6 +2106,7 @@
   });
 
   // Initial paint — all scenes painted to their idle state
+  applyLanguage(detectLanguage());
   renderDisplay(readInputs());
   updateSun(0);
   updateCow(0);
